@@ -11,7 +11,7 @@
     "bootstrap"
   ],
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://github.com/HarryPayne/angular-ppt",
   "private": true,
   "ignore": [
     "**/.*",
@@ -19,7 +19,8 @@
     "bower_components",
     "vendor",
     "test",
-    "tests"
+    "tests",
+    "src/vendor"
   ],
   "dependencies": {
     "angular": "^1.5.5",
@@ -32,7 +33,6 @@
     "angular-ui-router": "^0.3.0",
     "backbone": "^1.3.3",
     "bootstrap": "^3.3.6",
-    "DateJS": "datejs#^1.0.0-rc3",
     "a0-angular-storage": "^0.0.15",
     "angular-animate": "^1.5.5",
     "angular-formly-templates-bootstrap": "^6.3.2",
