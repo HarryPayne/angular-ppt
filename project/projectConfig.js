@@ -23,10 +23,10 @@
         url: '/project/:projectID',
         controller: "Project",
         controllerAs: "project",
-        templateUrl:"/static/project/project.html",
+        templateUrl:"/app/project/project.html",
         data: {
           requiresLogin: false,
-          viewUrl: "/static/project/project.html"
+          viewUrl: "/app/project/project.html"
         },
         resolve: {
           attributesPromise: ["attributesService", 
@@ -58,7 +58,7 @@
         controller: function ($stateParams) {
           console.log($stateParams);
         },
-        templateUrl: "/static/project/templates/detail.html",
+        templateUrl: "/app/project/templates/detail.html",
         data: {
           requiresLogin: false
         }
@@ -66,7 +66,7 @@
       .state("project.add",  {
         /** state for adding a project */
         url: "/add",
-        templateUrl: "/static/project/templates/description.html",
+        templateUrl: "/app/project/templates/description.html",
         data: {
           requiresLogin: true
         }
@@ -81,7 +81,7 @@
       .state('project.comment', {
         /** virtual root for project.comment views */
         url: '/comment',
-        templateUrl: "/static/project/templates/commentView.html",
+        templateUrl: "/app/project/templates/commentView.html",
         data: {
           requiresLogin: true,
         },
@@ -101,7 +101,7 @@
       .state("project.comment.edit", {
         /** state for the project editing Comment sub-tab */
         url: "/edit",
-        templateUrl: "/static/project/templates/commentEdit.html",
+        templateUrl: "/app/project/templates/commentEdit.html",
         resolve: {
           projectID: ["$stateParams", function($stateParams) {
             return $stateParams.projectID;
@@ -114,7 +114,7 @@
       .state("project.comment.editDetail", {
         /** state for editing the specified comment */
         url: "/editDetail/:commentID",
-        templateUrl: "/static/project/templates/commentDetail.html",
+        templateUrl: "/app/project/templates/commentDetail.html",
         resolve: {
           commentID: ["$stateParams", function($stateParams) {
             return $stateParams.commentID;
@@ -128,7 +128,7 @@
       .state("project.description", {
         /** virtual root for project.description views */
         url: "/description",
-        templateUrl: "/static/project/templates/description.html",
+        templateUrl: "/app/project/templates/description.html",
         data: {
           requiresLogin: true
         }
@@ -147,7 +147,7 @@
       .state("project.disposition", {
         /** virtual root for project.disposition views */
         url: "/disposition",
-        templateUrl: "/static/project/templates/disposition.html",
+        templateUrl: "/app/project/templates/disposition.html",
         data: {
           requiresLogin: true
         }
@@ -200,7 +200,7 @@
       .state("project.portfolio", {
         /** virtual root for the project.portfolio views */
         url: "/portfolio",
-        templateUrl: "/static/project/templates/portfolio.html",
+        templateUrl: "/app/project/templates/portfolio.html",
         data: {
           requiresLogin: true
         }
@@ -215,7 +215,7 @@
       .state("project.projectMan", {
         /** virtual root for the project.projectMan views */
         url: "/projectMan",
-        templateUrl: "/static/project/templates/projectMan.html",
+        templateUrl: "/app/project/templates/projectMan.html",
         data: {
           requiresLogin: true
         }

@@ -12,7 +12,7 @@
     $stateProvider
       .state("manage", {
         url: "/manage",
-        templateUrl: "/static/manage/manage.html",
+        templateUrl: "/app/manage/manage.html",
         controller: "Manage",
         controllerAs: "manage",
         data: {

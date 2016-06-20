@@ -20,7 +20,7 @@
         url: "/filter",
         controller: "Filter",
         controllerAs: "filter",
-        templateUrl: "/static/filter/filter.html",
+        templateUrl: "/app/filter/filter.html",
         data: {
           requiresLogin: false
         }
@@ -28,7 +28,7 @@
       .state("filter.builder", {
         /** state for filter builder to change query string */
         url: "/builder/:query_string",
-        templateUrl: "/static/filter/templates/builder.html",
+        templateUrl: "/app/filter/templates/builder.html",
         resolve: {
           query_string: ["$stateParams", function($stateParams) {
             return $stateParams.query_string;
@@ -44,7 +44,7 @@
       })
       .state("filter.builder.attributes", {
         url: "/attributes/:attribute_list",
-        templateUrl: "/static/filter/templates/attributes.html",
+        templateUrl: "/app/filter/templates/attributes.html",
         controller: function ($stateParams, query_string) {
           $stateParams.query_string = query_string;
           console.log($stateParams, query_string);
