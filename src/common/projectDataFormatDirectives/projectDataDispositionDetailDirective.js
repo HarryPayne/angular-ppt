@@ -14,7 +14,7 @@
 
     return {
       restrict: "EA",
-      templateUrl: "static/common/projectDataFormatDirectives/projectDataDispositionDetail.html"
+      templateUrl: "/app/src/common/projectDataFormatDirectives/projectDataDispositionDetail.html"
     };
     
   }

@@ -1,5 +1,5 @@
 // Karma configuration
-// Generated on Sun Jun 19 2016 19:47:12 GMT-0400 (EDT)
+// Generated on Tue Jun 21 2016 15:12:48 GMT-0400 (EDT)
 
 module.exports = function(config) {
   config.set({
@@ -41,28 +41,17 @@ module.exports = function(config) {
       'vendor/moment/moment.js',
       'vendor/moment-range/dist/moment-range.js',
       'vendor/angular-moment/angular-moment.min.js',
-      'app*.js',
-      'attributes/*.js',
-      'comment/*.js',
-      'common/*.js',
-      'curate/*.js',
-      'filter/*.js',
-      'header/*.js',
-      'home/*.js',
-      'login/*.js',
-      'loginInjector/*.js',
-      'manage/*.js',
-      'modalConfirm/*.js',
-      'project/*.js',
-      'report/*.js',
-      'select/*.js',
-      'stateLocation/*.js',
-      'title/*.js',
+      'node_modules/angular-mocks/angular-mocks.js',
+      'src/app.js',
+      'src/app.*.js',
+      'src/**/*.js',
+      'tests/**/*Spec.js'
     ],
 
 
     // list of files to exclude
     exclude: [
+      '**/*.swp'
     ],
 
 

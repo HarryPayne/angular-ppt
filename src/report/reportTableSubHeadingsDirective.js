@@ -27,7 +27,7 @@
       scope: {
         report: "="
       },
-      templateUrl: "static/report/templates/subHeadings.html"
+      templateUrl: "app/src/report/templates/subHeadings.html"
     };
   }
 

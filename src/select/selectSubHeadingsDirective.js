@@ -14,7 +14,7 @@
   function SelectSubHeadings() {    
     return {
       restrict: "EA",
-      templateUrl: "/app/select/templates/subHeadings.html"
+      templateUrl: "/app/src/select/templates/subHeadings.html"
     };
   };
 

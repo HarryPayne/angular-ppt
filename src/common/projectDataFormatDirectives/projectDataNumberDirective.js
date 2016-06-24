@@ -10,7 +10,7 @@
     
     return {
       restrict: "EA",
-      templateUrl: "static/common/projectDataFormatDirectives/projectDataNumber.html" 
+      templateUrl: "/app/src/common/projectDataFormatDirectives/projectDataNumber.html" 
     };
     
   }

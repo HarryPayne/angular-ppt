@@ -15,7 +15,7 @@
         backdrop: true,
         keyboard: true,
         modalFade: true,
-        templateUrl: "/app/modalConfirm/confirm.html"
+        templateUrl: "/app/src/modalConfirm/confirm.html"
       },
       modalOptions: {
         actionText: "OK",

@@ -17,10 +17,10 @@
     .factory("stateLocationService", stateLocationService);
   
   stateLocationService.$inject = ["$rootScope", "$location", "$state", "$stateParams", 
-                                  "stateHistoryService", "projectListService"];
+                                  "stateHistoryService"];
  
   function stateLocationService($rootScope, $location, $state, $stateParams, 
-                                stateHistoryService, projectListService){
+                                stateHistoryService){
     var service = {
       preventCall: [],
       locationChange: locationChange,
@@ -66,7 +66,6 @@
         service.preventCall.push(ignore_next);
       }
       var location = $location.url();
-      //var hashless_loc = location.substring(0, _.lastIndexOf(location, "#"));
       var entry = stateHistoryService.get(location);
       if (entry === null) {
         return;   //entry = service.getStateFromLocation();
@@ -97,24 +96,23 @@
       if (base == "project") {
         var projectID;
         var commentID;
-        var disposedIn;
+        //var disposedIn;
 
         state.params.projectID = parseInt(path.pop());
 
-        if (_.last(path) == "comment" && path[1] == "detail") {
-          state.name = "project.comment.edit.detail";
+        if (_.last(path) == "comment" && path[1] == "editDetail") {
+          state.name = "project.comment.editDetail";
           state.params.commentID = parseInt(path[0]);
         }
-        else if (_.last(path) == "disposition" && path[2] == "detail") {
+        else if (_.last(path) == "disposition" && path[1] == "editDetail") {
           state.name = "project.disposition.edit.detail";
-          state.params.disposedIn = parseInt(path[1]);
-          state.params.disposedInQ = parseInt(path[0]);
+          state.params.disposedIn = path[0];
         }
         else if (path.length == 0 || (path.length == 1 && path[0] == "")) {
           state.name = "project.detail";
         }
         else {
-          state.name = ["project", path[2], path[1]].join(".");
+          state.name = ["project"].concat(path.reverse()).join(".");
         }
       }
       else if (base == "filter") {

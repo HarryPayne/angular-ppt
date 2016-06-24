@@ -19,7 +19,7 @@
   function stateLocationRun($rootScope, $state, stateLocationService) {
     $rootScope.$on("stateChangeStart", function(event, toState, toParams) {
       $rootScope.$broadcast('savestate');
-  });
+    });
     
     $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams) {
       stateLocationService.stateChange();

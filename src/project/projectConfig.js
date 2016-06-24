@@ -23,10 +23,10 @@
         url: '/project/:projectID',
         controller: "Project",
         controllerAs: "project",
-        templateUrl:"/app/project/project.html",
+        templateUrl:"/app/src/project/project.html",
         data: {
           requiresLogin: false,
-          viewUrl: "/app/project/project.html"
+          viewUrl: "/app/src/project/project.html"
         },
         resolve: {
           attributesPromise: ["attributesService", 
@@ -40,11 +40,6 @@
               return projectListService.getMasterList()
             }
           ],
-          projectDataPromise: ["projectDataService",
-            function(projectDataService) {
-              return projectDataService.getModelObject($stateParams);
-            }
-          ],
           projectDataPromise: ["projectDataService", "$stateParams",
             function(projectDataService, $stateParams) {
               return projectDataService.getModelObject($stateParams);
@@ -54,11 +49,11 @@
       }) 
       .state('project.detail', {
         /** default state for project display view */
-        url: '/',
+        url: '/detail',
         controller: function ($stateParams) {
-          console.log($stateParams);
+          return $stateParams;
         },
-        templateUrl: "/app/project/templates/detail.html",
+        templateUrl: "/app/src/project/templates/detail.html",
         data: {
           requiresLogin: false
         }
@@ -66,7 +61,7 @@
       .state("project.add",  {
         /** state for adding a project */
         url: "/add",
-        templateUrl: "/app/project/templates/description.html",
+        templateUrl: "/app/src/project/templates/description.html",
         data: {
           requiresLogin: true
         }
@@ -81,54 +76,44 @@
       .state('project.comment', {
         /** virtual root for project.comment views */
         url: '/comment',
-        templateUrl: "/app/project/templates/commentView.html",
+        templateUrl: "/app/src/project/templates/commentView.html",
         data: {
           requiresLogin: true,
-        },
-        resolve: {
-          projectID: ["$stateParams", function($stateParams) {
-            return $stateParams.projectID;
-          }]
         }
       })
       .state("project.comment.add", {
         /** state for adding a comment to specified project */
-        url: "/add/",
-        controller: function ($stateParams) {
-          console.log($stateParams, projectID);
-        }
+        url: "/add/"
       })
       .state("project.comment.edit", {
         /** state for the project editing Comment sub-tab */
         url: "/edit",
-        templateUrl: "/app/project/templates/commentEdit.html",
-        resolve: {
-          projectID: ["$stateParams", function($stateParams) {
-            return $stateParams.projectID;
-          }]
-        },
-        controller: function ($stateParams) {
-          console.log($stateParams);
-        }
+        templateUrl: "/app/src/project/templates/commentEdit.html"
       })
       .state("project.comment.editDetail", {
         /** state for editing the specified comment */
         url: "/editDetail/:commentID",
-        templateUrl: "/app/project/templates/commentDetail.html",
+        templateUrl: "/app/src/project/templates/commentDetail.html",
         resolve: {
           commentID: ["$stateParams", function($stateParams) {
             return $stateParams.commentID;
-          }]
+          }],
+          selected_item: ["$stateParams", "projectDataService",
+            "projectDataPromise",
+            function($stateParams, projectDataService, projectDataPromise) {
+              projectDataService.selected_item = projectDataService.getSelectedDetail("comments", $stateParams);
+              return projectDataService.selected_item;
+            }
+          ]
         },
-        controller: function ($stateParams, projectID) {
-          $stateParams.projectID = projectID;
-          console.log($stateParams, projectID);
+        controller: function ($stateParams) {
+          return $stateParams;
         }
       })
       .state("project.description", {
         /** virtual root for project.description views */
         url: "/description",
-        templateUrl: "/app/project/templates/description.html",
+        templateUrl: "/app/src/project/templates/description.html",
         data: {
           requiresLogin: true
         }
@@ -137,7 +122,7 @@
         /** state for project editing Description sub-tab */
         url: "/edit",
         controller: function ($stateParams) {
-          console.log($stateParams);
+          return $stateParams;
           this.options.formState.readOnly = false;
         },
         data: {
@@ -147,7 +132,7 @@
       .state("project.disposition", {
         /** virtual root for project.disposition views */
         url: "/disposition",
-        templateUrl: "/app/project/templates/disposition.html",
+        templateUrl: "/app/src/project/templates/disposition.html",
         data: {
           requiresLogin: true
         }
@@ -156,7 +141,7 @@
         /** state for adding a disposition to the specified project */
         url: "/add",
         controller: function($stateParams) {
-          console.log($stateParams);
+          return $stateParams;
         },
         onEnter: ["attributesService",
           function(attributesService) {
@@ -186,7 +171,7 @@
           }]
         },
         controller: function ($stateParams) {
-          console.log($stateParams);
+          return $stateParams;
         }
       })
       .state("project.disposition.edit.detail", {
@@ -194,13 +179,13 @@
             consists of the year and quarter of the disposition */
         url: "/detail/:disposedIn",
         controller: function ($stateParams, projectID) {
-          console.log($stateParams);
+          return $stateParams;
         }
       })
       .state("project.portfolio", {
         /** virtual root for the project.portfolio views */
         url: "/portfolio",
-        templateUrl: "/app/project/templates/portfolio.html",
+        templateUrl: "/app/src/project/templates/portfolio.html",
         data: {
           requiresLogin: true
         }
@@ -209,13 +194,13 @@
         /** state for project editing under the Portfolio sub-tab */
         url: "/edit",
         controller: function ($stateParams) {
-          console.log($stateParams);
+          return $stateParams;
         }
       })
       .state("project.projectMan", {
         /** virtual root for the project.projectMan views */
         url: "/projectMan",
-        templateUrl: "/app/project/templates/projectMan.html",
+        templateUrl: "/app/src/project/templates/projectMan.html",
         data: {
           requiresLogin: true
         }
@@ -224,7 +209,7 @@
         /** state for project editing under the Project Management sub-tab */
         url: "/edit",
         controller: function ($stateParams) {
-          console.log($stateParams);
+          return $stateParams;
         }
       });
     
@@ -333,7 +318,7 @@
       ngModelAttrs[camelize(binding)] = {bound: binding};
     });
   
-    console.log(ngModelAttrs);
+    //console.log(ngModelAttrs);
   
     formlyConfigProvider.setType({
       name: 'datepicker',

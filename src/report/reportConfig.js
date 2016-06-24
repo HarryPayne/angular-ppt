@@ -20,7 +20,7 @@
         url: "/report",
         controller: "Report",
         controllerAs: "report",
-        templateUrl: "/app/report/report.html",
+        templateUrl: "/app/src/report/report.html",
         data: {
           requiresLogin: false
         }
@@ -28,7 +28,7 @@
       .state("report.columns", {
         /** state for the Select Other Columns view */
         url: "/columns/:query_string",
-        templateUrl: "/app/report/templates/columns.html",
+        templateUrl: "/app/src/report/templates/columns.html",
         controller: function ($stateParams) {
           console.log($stateParams);
         }
@@ -36,7 +36,7 @@
       .state("report.table", {
         /** state for the View Project List as Table view */
         url: "/:query_string",
-        templateUrl: "/app/report/templates/table.html",
+        templateUrl: "/app/src/report/templates/table.html",
         controller: function ($stateParams) {
           console.log($stateParams);
         }

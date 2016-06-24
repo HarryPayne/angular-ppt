@@ -19,7 +19,7 @@
     
     function getUserViaModal() {
       var instance = $uibModal.open({
-        templateUrl: "static/login/login.html",
+        templateUrl: "/app/src/login/login.html",
         controller: "Login",
         controllerAs: "login"
       });

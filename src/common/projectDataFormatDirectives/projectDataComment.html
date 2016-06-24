@@ -9,5 +9,5 @@
     on {{comment['commentEdited'] | amUtc | amLocal | amCalendar:referenceTime:formats}}
   </span>
   <button type="button" 
-    ng-click="ctrl.showDetails('comment', {'commentID': comment['commentID']})"> Edit </button>
+    ng-click="project.ds.showDetails('comment', {'commentID': comment['commentID']})"> Edit </button>
 </div>

@@ -37,7 +37,7 @@
       controller: controller,
       controllerAs: "ctrl",
       bindToController: true,
-      templateUrl: "static/common/jumpToProjectID/jumpToProjectID.html",
+      templateUrl: "/app/src/common/jumpToProjectID/jumpToProjectID.html",
       link: function(scope, element, attributes, ctrl) {
         /** when the form in the template is submitted call the controller's
             jump function */

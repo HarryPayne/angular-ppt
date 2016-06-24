@@ -15,7 +15,7 @@
         url: "/select",
         controller: "Select",
         controllerAs: "select",
-        templateUrl: "/app/select/select.html",
+        templateUrl: "/app/src/select/select.html",
         data: {
           requiresLogin: false
         },
@@ -41,11 +41,11 @@
       })
       .state("select.home", {
         url: "/home",
-        templateUrl: "/app/select/templates/home.html"
+        templateUrl: "/app/src/select/templates/home.html"
       })
       .state("select.addProject", {
         url: "/addProject",
-        templateUrl: "/app/select/templates/addProject.html",
+        templateUrl: "/app/src/select/templates/addProject.html",
         data: {
           requiresLogin: true
         }      });

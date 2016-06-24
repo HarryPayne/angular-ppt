@@ -7,11 +7,11 @@
     <div  class="container">
       <h3>{{ project.masterList().projectID}}: {{project.masterList().projectName}}</h3>
       <ul class="nav navbar-default nav-tabs col-lg-12" ng-show="project.ds.editMode()">
-        <li role="presentation" ng-class="{active:project.ds.currentSubtab() == 'description'}"><a ui-sref="project.description.edit({projectID:project.ds.projectID})">Description</a></li>
-        <li role="presentation" ng-class="{active:project.ds.currentSubtab() == 'portfolio'}"><a ui-sref="project.portfolio.edit({projectID:project.ds.projectID})">Portfolio</a></li>
-        <li role="presentation" ng-class="{active:project.ds.currentSubtab() == 'disposition'}"><a ui-sref="project.disposition.edit({projectID:project.ds.projectID})">Dispositions</a></li>
-        <li role="presentation" ng-class="{active:project.ds.currentSubtab() == 'projectMan'}"><a ui-sref="project.projectMan.edit({projectID:project.ds.projectID})">Project Management</a></li>
-        <li role="presentation" ng-class="{active:project.ds.currentSubtab() == 'comment'}"><a ui-sref="project.comment.edit({projectID:project.ds.projectID})">Comments</a></li>
+        <li role="presentation" ng-class="{active:project.ds.currentSubtab() == 'description'}"><a ui-sref="project.description.edit({projectID:project.ls.getProjectID()})">Description</a></li>
+        <li role="presentation" ng-class="{active:project.ds.currentSubtab() == 'portfolio'}"><a ui-sref="project.portfolio.edit({projectID:project.ls.getProjectID()})">Portfolio</a></li>
+        <li role="presentation" ng-class="{active:project.ds.currentSubtab() == 'disposition'}"><a ui-sref="project.disposition.edit({projectID:project.ls.getProjectID()})">Dispositions</a></li>
+        <li role="presentation" ng-class="{active:project.ds.currentSubtab() == 'projectMan'}"><a ui-sref="project.projectMan.edit({projectID:project.ls.getProjectID()})">Project Management</a></li>
+        <li role="presentation" ng-class="{active:project.ds.currentSubtab() == 'comment'}"><a ui-sref="project.comment.edit({projectID:project.ls.getProjectID()})">Comments</a></li>
         <!--li role="presentation" ng-class="{active:project.ds.currentSubtab() == 'attach'}"><a ui-sref="project.attach.edit({projectID:project.ds.projectID})">Attach a File</a></li -->
       </ul>
                 
@@ -69,7 +69,7 @@
     </script>
     <script type="text/ng-template" id="textarea-template.html">
     <div>
-      <textarea ng-if="!formState.readOnly" class="form-control" ng-bind="model[options.key]"></textarea>
+      <textarea ng-if="!formState.readOnly" class="form-control" ng-model="model[options.key]" ng-bind="model[options.key]"></textarea>
       <p ng-if="formState.readOnly" class="form-control-static">{{model[options.key]}}</p>
       </div>
     </script>

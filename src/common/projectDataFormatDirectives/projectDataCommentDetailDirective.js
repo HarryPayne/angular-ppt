@@ -15,7 +15,7 @@
         ctrl: "=",
         index: "@"
       },
-      templateUrl: "static/common/projectDataFormatDirectives/projectDataCommentDetail.html",
+      templateUrl: "/app/src/common/projectDataFormatDirectives/projectDataCommentDetail.html",
       link: function(scope, element, attributes) {
         console.log(scope);
       },

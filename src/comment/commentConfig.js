@@ -12,7 +12,7 @@
     $stateProvider
       .state("comment", {
         url: "/comment",
-        templateUrl: "/app/comment/comment.html",
+        templateUrl: "/app/src/comment/comment.html",
         controller: "Comment",
         controllerAs: "comment",
         data: {

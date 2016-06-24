@@ -12,7 +12,7 @@
   function ProjectSubHeadings() {
     return {
       restrict: "EA",
-      templateUrl: "/app/project/templates/subHeadings.html",
+      templateUrl: "/app/src/project/templates/subHeadings.html",
     };
   }
   

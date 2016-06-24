@@ -49,7 +49,7 @@
       currentMode: currentMode,
       currentSubtab: currentSubtab,
       editMode: editMode,
-      //flatten: flatten,
+      flatten: flatten,
       //getFieldDataFromResult: getFieldDataFromResult,
       getFormlyFields: attributesService.getFormlyFields,
       getModelObject: getModelObject,
@@ -59,6 +59,7 @@
       getProjectAttributes: attributesService.getProjectAttributes,
       getProjectDataFromLocation: getProjectDataFromLocation,
       hasProjectModel: hasProjectModel,
+      getSelectedDetail: getSelectedDetail,
       hideDetails: hideDetails,
       initService: initService,
       isSelected: isSelected,
@@ -234,7 +235,7 @@
     /**
      * @name flatten
      * @desc Flatten the data for one choice of sub-object by assigning those 
-     *       values to this.datasource. Parameters specify which list of
+     *       values to service.projectModel. Parameters specify which list of
      *       many-to-one items with respect to a project, and which item in
      *       that list, by index is to be flattened.
      * @param {string} list_name    The name of the attribute in datasource()
@@ -242,13 +243,13 @@
      *                              "dispositions").
      * @param {number} index        The index of the selected item.
      */
-    function flatten(list_name, index) {
-      var selected = service.projectModel[list_name][index];
+    function flatten(list_name, selected) {
       var fields = service.getFormlyFields(list_name);
       _.each(fields, function(field) {
         delete service.projectModel[field.key];
         service.projectModel[field.key] = this[field.key];
       }, selected);
+      service.SaveState();
     }
 
     /**
@@ -302,7 +303,7 @@
               var keys = [commentID];
               attributesService.updateProjAttrsFromRawItem("comment", keys);
             }
-            deferred.resolve(params);
+            deferred.resolve(service.projectModel);
         });
       }
       return deferred.promise;
@@ -363,6 +364,34 @@
         return false;
       }
     }
+    
+    /**
+     * @name getSelectedDetail
+     * @desc Given the name of a project model attribute that corresponds to a 
+     *       list of objects, and an object with primary key attributes and
+     *       values, use the values to filter the list to find the selected 
+     *       one, and return it.
+     * @param {String} name of the project attribute
+     * @param {Object} holding primary key values
+     */
+    function getSelectedDetail(attribute_name, key_object) {
+      var objects = angular.copy(service.getModelObject()[attribute_name]);
+      var keys = Object.keys(key_object);
+      objects = _.filter(objects, function(object) {
+        var pass = true;
+        _.each(keys, function(key) {
+          if (key == "projectID") return;
+          if (object[key] != this[key]) {
+            pass = false;
+          }
+        }, key_object);
+        return pass;
+      });
+      if (objects.length == 1) {
+        service.flatten('comments', objects[0])
+      }
+    }
+    
     /**
      *  @name hideDetails
      *  @desc a function for canceling out of Add a Comment or Add a Disposition
@@ -596,7 +625,7 @@
      * @param {Object[]} list_index - list of primary key values used to identify the
      *        record of interest if the table is one-to-many with projectID.
      */
-    function saveProject(table_name, list_index) {
+    function saveProject(table_name, params) {
       var projectID = $state.params.projectID ? $state.params.projectID : "";
       var data;
       if (typeof list_index != "undefined") {
@@ -680,7 +709,7 @@
      * @param {Object} keys
      */
     function showDetails(table_name, keys) {
-      keys.projectID = service.projectID;
+      //keys.projectID = service.projectID;
       $state.go("project."+table_name+".editDetail", keys);
     }
 

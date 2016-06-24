@@ -37,7 +37,7 @@
     this.jumpToAtachFile = projectDataService.jumpToAtachFile;
     this.jumpToAddForm = projectDataService.jumpToAddForm;
     this.masterList = this.ls.getMasterList;
-    this.showDetails = this.ds.shotDetails;
+    this.showDetails = this.ds.showDetails;
     this.success = this.ds.success;
 
     /* angular-formly options for Bootstrap horizontal layout and for 

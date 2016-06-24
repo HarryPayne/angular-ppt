@@ -186,13 +186,13 @@
     function getTemplateForDataModel(element, attributes) {
       var model = getDataModelFromTable(attributes.table);
       if (model == "one") {
-        return "static/common/projectDataDisplay/oneToOneDataModel.html";
+        return "/app/src/common/projectDataDisplay/oneToOneDataModel.html";
       }
       else if (model == "comments") {
-        return "static/common/projectDataDisplay/commentsDataModel.html";
+        return "/app/src/common/projectDataDisplay/commentsDataModel.html";
       }
       else if (model == "dispositions") {
-        return "static/common/projectDataDisplay/dispositionsDataModel.html";
+        return "/app/src/common/projectDataDisplay/dispositionsDataModel.html";
       }
     }
 
