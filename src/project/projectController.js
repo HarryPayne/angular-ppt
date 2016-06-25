@@ -56,6 +56,13 @@
         readOnly: false
       }
     };
+    this.editCommentOptions = {
+      formState: {
+        horizontalLabelClass: 'col-sm-0',
+        horizontalFieldClass: 'col-sm-12',
+        readOnly: false
+      }
+    };
 
     $scope.$on("setProjectFormPristine", function() {
       if (typeof projectForm != "undefined") {

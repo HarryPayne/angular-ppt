@@ -20,11 +20,13 @@
    *      under consideration. In the case of the one-to-many tables, this will
    *      be the list of items (comments or dispositions) to be listed.
    *    detailDatasource - a reference to an external function that supplies
-   *      a list of formly fields for the detail item. 
+   *      a list of attributes for the detail item to be edited. 
    *    detailIsSelected - a reference to a function that returns true when
    *      looping over the one-to-many items and landing on the one the user
    *      has selected.
    *    error - an object with error messages to be shown
+   *    fields - a reference to an external function that supplies
+   *      a list of formly fields for the detail item. 
    *    header - text for a header for the list of output rows
    *    hide - a reference to the external function to be run to exit from
    *      edit.detail mode back to edit mode.
@@ -38,6 +40,7 @@
    *      Cancel button is pressed.
    *    onSaveClick - a reference to the external function to be run when 
    *      the form  button is pressed.
+   *    options - formly options
    *    show - a reference to the external function to be run to edit an item
    *      in edit.detail mode.
    *    showSuccess - a reference to the external function to be run to decide
@@ -76,7 +79,7 @@
       restrict: "EA",
       scope: {
         datasource: "=",
-        detailDatasource: "&",
+        detailDatasource: "=",
         detailIsSelected: "&",
         error: "=",
         fields: "=",
@@ -87,6 +90,7 @@
         mode: "=",
         onCancelClick: "&",
         onSaveClick: "&",
+        options: "=",
         show: "&",
         showSuccess: "&",
         success: "=",
@@ -274,14 +278,14 @@
      */
     function isSelected(table_name, index) {
       if (typeof index == "undefined" || 
-          typeof this.keys == "undefined" || 
-          this.keys.length == 0 ||
+          typeof this.fields == "undefined" || 
+          this.fields.length == 0 ||
           this.datasource == "undefined" ||
           this.datasource.length == 0) {
         return false;
       }
       var selected = false;
-      var item = this.datasource[index];
+      var item = this.datasource[table_name][index];
       if (typeof item != "undefined") {
         _.each(this.keys, function(key){
           var state_value = this.stateParams[key];

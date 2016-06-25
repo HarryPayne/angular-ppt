@@ -88,12 +88,12 @@
       .state("project.comment.edit", {
         /** state for the project editing Comment sub-tab */
         url: "/edit",
-        templateUrl: "/app/src/project/templates/commentEdit.html"
+        templateUrl: "/app/src/project/templates/comment.html"
       })
       .state("project.comment.editDetail", {
         /** state for editing the specified comment */
         url: "/editDetail/:commentID",
-        templateUrl: "/app/src/project/templates/commentDetail.html",
+        templateUrl: "/app/src/project/templates/comment.html",
         resolve: {
           commentID: ["$stateParams", function($stateParams) {
             return $stateParams.commentID;

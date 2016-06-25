@@ -61,7 +61,7 @@
 <div class="col-sm-offset-2">
   <div ng-hide="ctrl.mode == 'add' || ctrl.mode == 'edit.detail'" class="col-sm-4">
     Entered <span ng-bind="comment['commentAuthored.printValue']"></span>
-    <span ng-show="comment['commentEditor']"><br/>Last edited by <span ng-bind="comment['commentEditor']"></span> on <span ng-bind="comment['commentEdited.printValue']"></span></span><br/>
+    <span ng-show="comment['commentLastModifiedBy']"><br/>Last edited by <span ng-bind="comment['commentLastModifiedBy']"></span> on <span ng-bind="comment['commentLastModified'] | amUtc | amLocal | amCalendar:referenceTime:formats"></span></span><br/>
   </div>
   <div ng-show="ctrl.mode == 'add'" class="col-sm-4">
     <button type="button" ng-click="ctrl.save('disposition', [{name: 'disposedInFY', value: {id: 0}}, {name: 'disposedInQ', value: {id: 0}}])"> Add </button>

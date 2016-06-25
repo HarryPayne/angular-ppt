@@ -388,7 +388,7 @@
         return pass;
       });
       if (objects.length == 1) {
-        service.flatten('comments', objects[0])
+        return objects[0];
       }
     }
     
@@ -605,9 +605,15 @@
     function RestoreState() {
       if (typeof sessionStorage.projectDataServiceAttributes != "undefined") {
         var data = angular.fromJson(sessionStorage.projectDataServiceAttributes);
-        service.restoredParams = data.params;
-        service.projectID = data.params.projectID;
+        service.restoredParams = data.savedState.params;
+        service.restoredState = data.savedState.name;
+        service.projectID = data.savedState.params.projectID;
         service.csrf_token = data.csrf_token;
+        if (service.restoredState.replace("editDetail", "edit") == 
+            stateLocationService.getStateFromLocation().name) {
+          service.success = data.messages.success;
+          service.error = data.messages.error;
+        }
         service.projectModel = service.jsonToModel(data.projectModel);
       }
     };
@@ -625,11 +631,11 @@
      * @param {Object[]} list_index - list of primary key values used to identify the
      *        record of interest if the table is one-to-many with projectID.
      */
-    function saveProject(table_name, params) {
+    function saveProject(table_name, item) {
       var projectID = $state.params.projectID ? $state.params.projectID : "";
       var data;
-      if (typeof list_index != "undefined") {
-        data = tableToJSON(table_name, list_index.model);
+      if (typeof item != "undefined") {
+        data = tableToJSON(item.field_name, item.model);
       }
       else {
         data = tableToJSON(table_name, service.projectModel);
@@ -646,13 +652,15 @@
        $http(request)
         .then(function (response) {
           if (response.status == 200) {
-              service.setProjectData(response);
-              service.noCheck = true;
-              var stateName = table_name;
-              if (table_name == "project") {
-                stateName = "projectMan";
-              }
+            service.setProjectData(response);
+            service.noCheck = true;
+            var stateName = table_name;
+            if (table_name == "project") {
+              stateName = "projectMan";
+            }
+            if (typeof service.success != "undefined" && service.success.length > 0) {
               $state.go("project." + stateName + ".edit", {projectID: $state.params.projectID, noCheck: true});
+            }
           }
         });
     }
@@ -661,9 +669,10 @@
       if (Object.keys(service.projectModel).length == 0) return;
       
       var data = new Object;
-      data.params = stateLocationService.getStateFromLocation().params;
+      data.savedState = stateLocationService.getStateFromLocation();
       data.csrf_token = service.csrf_token;
       data.projectModel = service.projectModel; 
+      data.messages = {success: service.success, error: service.error}
       sessionStorage.projectDataServiceAttributes = angular.toJson(service.modelToJSON(data));
     };
       
@@ -705,12 +714,26 @@
      *        linked to those edit buttons. The data for the selected item is
      *        copied into the project attributes for this project and then
      *        handled like a table that is one-to-one with projectID.
-     * @param {string} table_name
+     * @param {string} attribute_name
      * @param {Object} keys
      */
-    function showDetails(table_name, keys) {
+    function showDetails(attribute_name, keys) {
       //keys.projectID = service.projectID;
-      $state.go("project."+table_name+".editDetail", keys);
+      //$state.go("project."+table_name+".editDetail", keys);
+      
+      //var selected = attributesService.updateProjAttrsFromRawItem(table_name, keys);
+      var selected = service.getSelectedDetail(attribute_name, keys);
+      if (attribute_name == 'comments') {
+        $state.go("project.comment.editDetail", 
+                  {projectID: service.projectID, commentID: selected.commentID});
+      }
+      if (attribute_name == 'dispositions') {
+        $state.go("project.disposition.edit.detail", 
+                  {projectID: projectListService.getProjectID(), 
+                   disposedInFY: selected.disposedInFY.id,
+                   disposedInQ: selected.disposedInQ.id});
+      }
+      
     }
 
     /**

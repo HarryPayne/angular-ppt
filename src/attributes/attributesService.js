@@ -144,7 +144,7 @@ Data attributes:
           this[attr.name] = null;
         }
       }
-      else if (_.contains(["commentAuthored", "commentEdited"], attr.name)) { // list of computed attributes rendered as string 
+      else if (_.contains(["commentAuthored", "commentLastModified"], attr.name)) { // list of computed attributes rendered as string 
         if (attr.computed) return;
         if (attr.value) {
           this[attr.name] = new Date(attr.value).toString("yyyy-MM-ddTHH:mm:ss");
@@ -227,7 +227,7 @@ Data attributes:
       }
       _.each(service.getProjectAttributes(tableName), addAttrToDataObj, formData);
       if (tableName == "comment") {
-        formData["commentEditor"] = $rootScope.currentUser.id;
+        formData["commentLastModifiedBy"] = $rootScope.currentUser.id;
       }
       return formData;
     };
