@@ -56,13 +56,6 @@
         readOnly: false
       }
     };
-    this.editCommentOptions = {
-      formState: {
-        horizontalLabelClass: 'col-sm-0',
-        horizontalFieldClass: 'col-sm-12',
-        readOnly: false
-      }
-    };
 
     $scope.$on("setProjectFormPristine", function() {
       if (typeof projectForm != "undefined") {
@@ -114,6 +107,7 @@
           $scope.projectForm.$setPristine(true);
           var target = toParams.projectID ? toParams.projectID : fromParams.projectID;
           projectDataService.getProjectData(target, toParams); // forced discard
+          service.SaveState();
           $state.go(toState, toParams);
         });
       }

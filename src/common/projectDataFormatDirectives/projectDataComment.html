@@ -8,6 +8,6 @@
     <br/>Last edited by <span ng-bind="comment['commentLastModifiedBy']"></span> 
     on {{comment['commentLastModified'] | amUtc | amLocal | amCalendar:referenceTime:formats}}
   </span>
-  <button type="button" 
+  <button type="button" ng-hide="ctrl.mode=='editDetail' || ctrl.mode=='add' || ctrl.mode=='view'"
     ng-click="ctrl.showDetails('comments', {'commentID': comment['commentID']})"> Edit </button>
 </div>

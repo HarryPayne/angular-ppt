@@ -20,15 +20,8 @@
         ng-click="ctrl.hideDetails('comment', [{name: 'commentID', id: comment['commentID']}])"> Cancel </button>
     </div>
 
-    <div class="col-sm-offset-2 col-sm-10" style="background-color: #eeeeee; border-color: #e7e7e7; padding: 0, 15px;">
-      <h5 ng-hide="ctrl.mode == 'add'">Edit this comment:</h5>
-
-    <!--textarea ng-model="comment.comment" ng-bind="comment.comment" 
-      class="form-control"></textarea-->
-    </div>
-
-    <div style="background-color: #eee; border-color: #e7e7e7;"
-      class="col-sm-offset-2 col-sm-10">
+    <div style="background-color: #eee; border-color: #e7e7e7; padding-top:15px;"
+      class="col-sm-12">
       <formly-form model="comment"
         fields="ctrl.fields" 
         options="ctrl.options">
@@ -38,15 +31,13 @@
             <span ng-show="comment['commentLastModifiedBy'].length"><br/>
               Last edited by <span ng-bind="comment['commentLastModifiedBy']"></span>
               on <span ng-bind="comment['commentLastModified'] | amUtc | amLocal | amCalendar:referenceTime:formats"></span></span><br/>
-          </div class="col-sm-4">
+          </div>
+        </div>
+        <div class="col-sm-offset-2">
           <button type="button" ng-click="ctrl.save('comment', {model: comment, field_name: 'comments'})"> Save </button>
           <button type="button" ng-click="ctrl.hideDetails('comment', [{name: 'commentID', id: comment['commentID']}])"> Cancel </button>
         </div>
       </formly-form>
     </div>
 
-
-    <div ng-show="ctrl.mode == 'add'" class="col-sm-12">
-      <h4> Earlier Comments </h4>
-    </div>
 </div>

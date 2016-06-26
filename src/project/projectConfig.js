@@ -83,7 +83,8 @@
       })
       .state("project.comment.add", {
         /** state for adding a comment to specified project */
-        url: "/add/"
+        url: "/add",
+        templateUrl: "/app/src/project/templates/comment.html"
       })
       .state("project.comment.edit", {
         /** state for the project editing Comment sub-tab */

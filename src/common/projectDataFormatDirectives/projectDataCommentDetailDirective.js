@@ -10,13 +10,8 @@
     
     return {
       replace: true,
-      scope: {
-        comment: "=",
-        ctrl: "=",
-        index: "@"
-      },
       templateUrl: "/app/src/common/projectDataFormatDirectives/projectDataCommentDetail.html",
-      link: function(scope, element, attributes) {
+      link: function(scope, element, attributes, ctrl) {
         console.log(scope);
       },
     };

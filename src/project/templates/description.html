@@ -1,7 +1,7 @@
 <project-data-display
   datasource="project.ds.projectModel"
   error="project.ds.error"
-  fields="project.as.formlyFields['description']"
+  fields="project.ds.getFormlyFields('description')"
   header="'Description Attributes'"
   mode="project.ds.currentMode()"
   on-save-click="project.ds.saveProject"

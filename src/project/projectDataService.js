@@ -51,6 +51,7 @@
       editMode: editMode,
       flatten: flatten,
       //getFieldDataFromResult: getFieldDataFromResult,
+      getEnabledFields: getEnabledFields,
       getFormlyFields: attributesService.getFormlyFields,
       getModelObject: getModelObject,
       getModelValue: getModelValue,
@@ -83,7 +84,7 @@
     
     initService();
     
-    //$rootScope.$on("savestate", service.SaveState);
+    $rootScope.$on("savestate", service.SaveState);
     $rootScope.$on("restorestate", service.RestoreState);
     $rootScope.$on("$locationChangeSuccess", function() {
 
@@ -253,14 +254,34 @@
     }
 
     /**
+     * @name getEnabledFields
+     * @desc A method that returns only those formly fields for a table where
+     *       templateOptions.disabled is false.
+     * @param {String} table_name of the fields to be returned.
+     */
+    function getEnabledFields(table_name) {
+      return _.filter(service.getFormlyFields(table_name), function(field) {
+        return field.templateOptions.disabled == false;
+      });
+    }
+    
+    /**
      * @name getModelValue
-     * @decs A method that returns the value of the requested model attribute.
+     * @desc A method that returns the value of the requested model attribute.
      * @param {string} attr_name - name of the requested attribute.
      */
     function getModelValue(attr_name) {
       return service.projectModel[attr_name];
     }
 
+    /**
+     * @name getModelObject
+     * @desc A function that returns the entire data model for a project, if
+     *       there is one in hand. Otherwise, return a promise for one that
+     *       will be retrieved from the server.
+     * @param {Object} containing state parameters that need to be associated
+     *       with the data model after it has been retrieved from the server.
+     */
     function getModelObject(params) {
       if (service.hasProjectModel()) {
         return service.projectModel;
@@ -433,13 +454,12 @@
       projectListService.setProjectID(state_projectID);
       if (state_projectID && state_projectID > -1 
           && saved_projectID != state_projectID){
-        /** then the data we want is not what we have, so ... */
+        /* then the data we want is not what we have, so ... */
         service.getProjectDataValues($stateParams);
       }
       else if (saved_projectID && saved_projectID == state_projectID
                &&  typeof service.projectModel == "undefined") {
-        /** we should be good to go but there are no saved data, 
-         *  so ... */
+        /* we should be good to go but there are no saved data, so ... */
         service.getProjectDataValues($stateParams);
       }
       else {
@@ -609,12 +629,25 @@
         service.restoredState = data.savedState.name;
         service.projectID = data.savedState.params.projectID;
         service.csrf_token = data.csrf_token;
-        if (service.restoredState.replace("editDetail", "edit") == 
-            stateLocationService.getStateFromLocation().name) {
+        service.projectModel = service.jsonToModel(data.projectModel);
+        
+        /* If current state is an "edit" state, and previous state was 
+         * "editDetail" or "add" under the same subtab, then restore success 
+         * or error messages that we did not see before changing state. 
+         * Otherwise, save a state with cleared out messages. */
+        if ((_.last(service.restoredState.split(".")) == "editDetail" &&
+             service.restoredState.replace("editDetail", "edit") == 
+             stateLocationService.getStateFromLocation().name)
+            ||
+            (_.last(service.restoredState.split(".")) == "add" &&
+             service.restoredState.replace("add", "edit") == 
+             stateLocationService.getStateFromLocation().name)) {
           service.success = data.messages.success;
           service.error = data.messages.error;
         }
-        service.projectModel = service.jsonToModel(data.projectModel);
+        else {
+          service.SaveState();
+        }
       }
     };
 
