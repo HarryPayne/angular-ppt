@@ -50,8 +50,8 @@
       .state('project.detail', {
         /** default state for project display view */
         url: '/detail',
-        controller: function ($stateParams) {
-          return $stateParams;
+        controller: function ($stateParams, projectDataPromise) {
+          this.projectModel=projectDataPromise;
         },
         templateUrl: "/app/src/project/templates/detail.html",
         data: {
@@ -74,42 +74,29 @@
         }
       })
       .state('project.comment', {
-        /** virtual root for project.comment views */
+        /** Virtual root for project.comment views. 
+         *  The template contains a viewport for views under this tab.
+         */
         url: '/comment',
-        templateUrl: "/app/src/project/templates/commentView.html",
+        templateUrl: "/app/src/project/templates/detailView.html",
         data: {
           requiresLogin: true,
         }
       })
       .state("project.comment.add", {
-        /** state for adding a comment to specified project */
+        /** State for adding a comment to specified project. */
         url: "/add",
         templateUrl: "/app/src/project/templates/comment.html"
       })
       .state("project.comment.edit", {
-        /** state for the project editing Comment sub-tab */
+        /** State for the project editing Comment sub-tab. */
         url: "/edit",
         templateUrl: "/app/src/project/templates/comment.html"
       })
       .state("project.comment.editDetail", {
-        /** state for editing the specified comment */
+        /** State for editing the specified comment. */
         url: "/editDetail/:commentID",
-        templateUrl: "/app/src/project/templates/comment.html",
-        resolve: {
-          commentID: ["$stateParams", function($stateParams) {
-            return $stateParams.commentID;
-          }],
-          selected_item: ["$stateParams", "projectDataService",
-            "projectDataPromise",
-            function($stateParams, projectDataService, projectDataPromise) {
-              projectDataService.selected_item = projectDataService.getSelectedDetail("comments", $stateParams);
-              return projectDataService.selected_item;
-            }
-          ]
-        },
-        controller: function ($stateParams) {
-          return $stateParams;
-        }
+        templateUrl: "/app/src/project/templates/comment.html"
       })
       .state("project.description", {
         /** virtual root for project.description views */
@@ -133,7 +120,7 @@
       .state("project.disposition", {
         /** virtual root for project.disposition views */
         url: "/disposition",
-        templateUrl: "/app/src/project/templates/disposition.html",
+        templateUrl: "/app/src/project/templates/detailView.html",
         data: {
           requiresLogin: true
         }
@@ -141,47 +128,17 @@
       .state("project.disposition.add", {
         /** state for adding a disposition to the specified project */
         url: "/add",
-        controller: function($stateParams) {
-          return $stateParams;
-        },
-        onEnter: ["attributesService",
-          function(attributesService) {
-            if (!attributesService.getAllAttributes()) {
-              /** then the list of project brief descriptions is empty. Get it */
-              attributesService.updateAllAttributes()
-                .then(function() {
-                  attributesService.updateProjAttrsFromRawItem('disposition', 
-                    [{name: 'disposedInFY', value: {id: 0}}, 
-                     {name: 'disposedInQ', value: {id: 0}}]);
-                });
-            } else {
-              attributesService.updateProjAttrsFromRawItem('disposition', 
-                [{name: 'disposedInFY', value: {id: 0}}, 
-                 {name: 'disposedInQ', value: {id: 0}}]);
-            }
-          }
-        ]
-
+        templateUrl: "/app/src/project/templates/disposition.html"
       })
       .state("project.disposition.edit", {
         /** state for project editing Disposition tab */
         url: "/edit",
-        resolve: {
-          projectID: ["$stateParams", function($stateParams) {
-            return $stateParams.projectID;
-          }]
-        },
-        controller: function ($stateParams) {
-          return $stateParams;
-        }
+        templateUrl: "/app/src/project/templates/disposition.html"
       })
-      .state("project.disposition.edit.detail", {
-        /** state for editing the specified disposition, where the primary key
-            consists of the year and quarter of the disposition */
-        url: "/detail/:disposedIn",
-        controller: function ($stateParams, projectID) {
-          return $stateParams;
-        }
+      .state("project.disposition.editDetail", {
+        /** state for editing the specified disposition */
+        url: "/editDetail/:disposedIn",
+        templateUrl: "/app/src/project/templates/disposition.html"
       })
       .state("project.portfolio", {
         /** virtual root for the project.portfolio views */

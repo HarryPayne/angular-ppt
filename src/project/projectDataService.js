@@ -52,6 +52,7 @@
       flatten: flatten,
       //getFieldDataFromResult: getFieldDataFromResult,
       getEnabledFields: getEnabledFields,
+      getFormlyField: attributesService.getFormlyField,
       getFormlyFields: attributesService.getFormlyFields,
       getModelObject: getModelObject,
       getModelValue: getModelValue,
@@ -398,16 +399,28 @@
     function getSelectedDetail(attribute_name, key_object) {
       var objects = angular.copy(service.getModelObject()[attribute_name]);
       var keys = Object.keys(key_object);
+      var fields = new Object;
+      _.each(keys, function(key) {
+          fields[key] = service.getFormlyField(key);
+      });
       objects = _.filter(objects, function(object) {
         var pass = true;
         _.each(keys, function(key) {
           if (key == "projectID") return;
-          if (object[key] != this[key]) {
+          if (fields[key].type == "daterange") {
+            if (object[key].start.toString() != this[key].start.toString()) {
+              pass = false;
+            }
+            if (object[key].end.toString() != this[key].end.toString()) {
+              pass = false;
+            }
+          }
+          else if (object[key].toString() != keys[key]) {
             pass = false;
           }
         }, key_object);
         return pass;
-      });
+      }, this);
       if (objects.length == 1) {
         return objects[0];
       }
@@ -474,12 +487,12 @@
      *        work on." The primary key values of the item are compared with
      *        the stateParam values for each key.
      */
-    function isSelected(model, table_name, keys, index) {
+    function isSelected(table_name, index, keys) {
       if (typeof index == "undefined" || 
           typeof keys == "undefined" || 
           keys.length == 0 ||
           typeof service.projectModel[table_name] == "undefined" ||
-          service.projectModel[table_name].length == 0) {
+          Object.keys(service.projectModel[table_name]).length == 0) {
         return false;
       }
       var selected = false;
@@ -761,10 +774,9 @@
                   {projectID: service.projectID, commentID: selected.commentID});
       }
       if (attribute_name == 'dispositions') {
-        $state.go("project.disposition.edit.detail", 
+        $state.go("project.disposition.editDetail", 
                   {projectID: projectListService.getProjectID(), 
-                   disposedInFY: selected.disposedInFY.id,
-                   disposedInQ: selected.disposedInQ.id});
+                   disposedIn: selected.disposedIn});
       }
       
     }

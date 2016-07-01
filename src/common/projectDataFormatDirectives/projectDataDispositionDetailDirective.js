@@ -8,12 +8,8 @@
   
   function ProjectDataDispositionDetail() {
     
-    function controller() {
-      var vm = this;
-    }
-
     return {
-      restrict: "EA",
+      replace: true,
       templateUrl: "/app/src/common/projectDataFormatDirectives/projectDataDispositionDetail.html"
     };
     

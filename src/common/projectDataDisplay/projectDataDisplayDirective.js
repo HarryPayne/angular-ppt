@@ -280,11 +280,10 @@
       if (typeof index == "undefined" || 
           typeof this.fields == "undefined" || 
           this.fields.length == 0 ||
-          this.datasource == "undefined" ||
-          this.datasource.length == 0) {
+          typeof this.datasource == "undefined") {
         return false;
       }
-      var selected = false;
+      var selected = true;
       var item = this.datasource[table_name][index];
       if (typeof item != "undefined") {
         _.each(this.keys, function(key){
@@ -292,10 +291,7 @@
           var item_value = item[key].toString();
           if ((typeof state_value != "undefined" 
                && typeof item_value != "undefined" 
-               && state_value == item_value)) {
-            selected =  true;
-          }
-          else {
+               && state_value != item_value)) {
             selected = false;
           }
         }, this);

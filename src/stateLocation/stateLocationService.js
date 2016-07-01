@@ -105,7 +105,7 @@
           state.params.commentID = parseInt(path[0]);
         }
         else if (_.last(path) == "disposition" && path[1] == "editDetail") {
-          state.name = "project.disposition.edit.detail";
+          state.name = "project.disposition.editDetail";
           state.params.disposedIn = path[0];
         }
         else if (path.length == 0 || (path.length == 1 && path[0] == "")) {

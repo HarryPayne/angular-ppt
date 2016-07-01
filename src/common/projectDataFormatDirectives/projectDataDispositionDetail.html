@@ -1,78 +1,62 @@
-<div ng-hide="ctrl.mode == 'add'">
-  <label for="dispositionID" class="col-sm-2 control-label">
-    <label ng-bind="ctrl.detailsObj('disposedInFY').value.desc"></label>
-    <label ng-bind="ctrl.detailsObj('disposedInFY').child.value.desc"></label>
-  </label>
-  <div class="col-sm-10" style="padding-top: 7px;">
-    <span ng-bind="ctrl.detailsObj('dispositionID').value.desc" class="text-capitalize"></span>.
-    <span ng-show="ctrl.detailsObj('reconsiderInFY').value.desc || ctrl.detailsObj('reconsiderInFY').child.value.desc">
-      Reconsider in <span ng-bind="ctrl.detailsObj('reconsiderInFY').value.desc"></span>
-      <span ng-bind="ctrl.detailsObj('reconsiderInFY').child.value.desc"></span>.
-    </span>
-    <span ng-show="ctrl.detailsObj('startInY').value.desc || ctrl.detailsObj('startInY').child.value.desc">
-      Start in <span ng-bind="ctrl.detailsObj('startInY').child.value.desc"></span>
-      <span ng-bind="ctrl.detailsObj('startInY').value.desc"></span>.
-    </span>
-    <span ng-show="ctrl.detailsObj('finishInY').value.desc || ctrl.detailsObj('finishInY').child.value.desc">
-      Finish in <span ng-bind="ctrl.detailsObj('finishInY').child.value.desc"></span>
-      <span ng-bind="ctrl.detailsObj('finishInY').value.desc"></span>.
-    </span>
-    </span ng-show="ctrl.detailsObj('explanation')">
-      <br/>
-      <span ng-bind-html="ctrl.detailsObj('explanation').value"></span>
-    </span>
-    <span>
-      <br/>
-      Last modified by <span ng-bind="disp['lastModifiedBy']"></span> on <span ng-bind="disp['lastModified.printValue']"></span>
-    </span>
-    <button type="button" 
-      ng-show="ctrl.mode == 'edit'"
-      ng-click="ctrl.showDetails('disposition', [{name: 'disposedInFY', value: {id: disp['disposedInFY']['id']}}, {name: 'disposedInQ', value: {id: disp['disposedInQ']['id']}}])"> Edit </button>
-    <button type="button"
-      ng-show="ctrl.mode == 'edit.detail'"
-      ng-click="ctrl.hideDetails('disposition', [{name: 'disposedInFY', value: {id: disp['disposedInFY']['id']}}, {name: 'disposedInQ', value: {id: disp['disposedInQ']['id']}}])"> Cancel </button>
-  </div>
-</div>
-
-<div class="col-sm-offset-2 col-sm-10 @gray-light" style="border-color: #e7e7e7;">
-  <h5 ng-hide="ctrl.mode == 'add'">Edit this disposition:</h5>
-</div>
-
-<div style="@background-color: @gray-lighter; border-color: #e7e7e7;">
-  <div class="form-group" 
-    ng-repeat="attr in ctrl.details()"
-    ng-class="{required: attr.required}">
-    <label for="{{attr.name}}" ng-bind="attr.label" class="col-sm-2 control-label text-capitalize"></label>
-    <div ng-switch="attr.format" class="col-sm-10" style="padding-top: 7px;">
-      <div ng-show="attr.errors" class="alert alert-danger alert-dismissible">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close" aria-hidden="true">×</button>
-        <span ng-bind="attr.errors"></span>
+<div>
+  {{dispostion.disposedIn}}
+  <div ng-hide="ctrl.mode == 'add'">
+    <label for="dispositionID" class="col-sm-2 control-label">
+      <span ng-show="disposition['disposedIn'].start">FY</span>{{disposition['disposedIn'].start | amDateFormat:"YY"}}
+      <span ng-show="disposition['disposedIn'].start">Q</span>{{disposition['disposedIn'].start | amDateFormat:"Q"}} 
+    </label>
+    <div class="col-sm-10" style="padding-top: 7px;">
+      <span class="text-capitalize">{{disposition['dispositionDesc']}}.</span>
+      <span ng-show="disposition['reconsiderIn']">
+        Reconsider in 
+          FY{{disposition['reconsiderIn'].start | amDateFormat:"YY"}}
+          Q{{disposition['reconsiderIn'].start | amDateFormat:"Q"}}.
+        </span>
+      <span ng-show="disposition['plannedFor'].start">
+        Start in 
+          {{disposition['plannedFor'].start | amDateFormat:"MMM"}}<span ng-show="disposition['plannedFor'].end">, 
+          {{disposition['plannedFor'].start | amDateFormat:"YYYY"}}</span>. 
+        </span>
+      </span>
+        </span>
+      <span ng-show="disposition['plannedFor'].end">
+        Finish in 
+          {{disposition['plannedFor'].start | amDateFormat:"MMM"}}<span ng-show="disposition['plannedFor'].end">, {{disposition['plannedFor'].end | amDateFormat:"YYYY"}}</span>. 
+        </span>
+      </span>
+      <span ng-show="disposition['explanation']">
+        <br/>
+        {{disposition['explanation']}}
+      </span>
+      <span>
+        <br/>
+        Last modified by {{disposition['dispositionLastModifiedBy']}} on 
+        {{disposition['dispositionLastModified'] | amUtc | amLocal | amCalendar:referenceTime:formats}}.
+      </span>
+      <div>
+        <button type="button"
+          ng-hide="ctrl.mode=='editDetail' || ctrl.mode=='add' || ctrl.mode=='view'"
+          ng-click="ctrl.showDetails('disposition', {'disposedIn': disposition['disposedIn']})"> Edit </button>
+        <button type="button"
+          ng-show="ctrl.mode == 'editDetail'"
+          ng-click="ctrl.hideDetails('disposition', {'disposedIn': disposition['disposedIn']})"> Cancel </button>
       </div>
-      <span ng-switch-when="date" project-data-date></span>
-      <span ng-switch-when="dateRangeSelect" project-data-date-range-select></span>
-      <span ng-switch-when="multipleSelect" project-data-multiple-select></span>
-      <span ng-switch-when="number" project-data-number></span>
-      <span ng-switch-when="string" project-data-string></span>
-      <span ng-switch-when="textArea" project-data-text-area></span>
     </div>
   </div>
-</div>
+  
+  <div style="background-color: #eee; border-color: #e7e7e7; padding-top:15px;"
+    class="col-sm-12">
+    <formly-form model="disposition"
+      fields="ctrl.fields" 
+      options="ctrl.options">
+      <div class="col-sm-offset-2">
+        <button type="button" 
+          ng-click="ctrl.save('disposition', {model: disposition, field_name: 'dispositions'})"> Save </button>
+        <button type="button"
+           ng-click="ctrl.hideDetails('disposition', {'disposedIn': disposition['disposedIn']})"> Cancel </button>
+      </div>
+    </formly-form>
+  </div>
+  
 
-<div class="col-sm-offset-2">
-  <div ng-hide="ctrl.mode == 'add' || ctrl.mode == 'edit.detail'" class="col-sm-4">
-    Entered <span ng-bind="comment['commentAuthored.printValue']"></span>
-    <span ng-show="comment['commentLastModifiedBy']"><br/>Last edited by <span ng-bind="comment['commentLastModifiedBy']"></span> on <span ng-bind="comment['commentLastModified'] | amUtc | amLocal | amCalendar:referenceTime:formats"></span></span><br/>
-  </div>
-  <div ng-show="ctrl.mode == 'add'" class="col-sm-4">
-    <button type="button" ng-click="ctrl.save('disposition', [{name: 'disposedInFY', value: {id: 0}}, {name: 'disposedInQ', value: {id: 0}}])"> Add </button>
-    <button type="button" ng-click="ctrl.hideDetails('disposition', [{name: 'disposedInFY', value: {id: 0}}, {name: 'disposedInQ', value: {id: 0}}])"> Cancel </button>
-  </div>
-  <div ng-show="ctrl.mode == 'edit.detail'" class="col-sm-4">
-    <button type="button" ng-click="ctrl.save('disposition', [{name: 'disposedInFY', value: {id: disp['disposedInFY']['id']}}, {name: 'disposedInQ', value: {id: disp['disposedInQ']['id']}}])"> Save </button>
-    <button type="button" ng-click="ctrl.hideDetails('disposition', [{name: 'disposedInFY', value: {id: disp['disposedInFY']['id']}}, {name: 'disposedInQ', value: {id: disp['disposedInQ']['id']}}])"> Cancel </button>
-  </div>
-</div>
-
-<div ng-show="ctrl.mode == 'add'" class="col-sm-12">
-  <h4> Other dispositions </h4>
 </div>
