@@ -60,10 +60,12 @@
                       + " navigate away, or press Cancel to stay on this page."
         };
 
-        modalConfirmService.showModal({}, modalOptions).then(function (result) {
-          $scope.addProject.$setPristine();
-          $state.go(toState, toParams);
-        });
+        modalConfirmService.showModal({}, modalOptions)
+          .then(function (result) {
+            $scope.addProject.$setPristine();
+            $state.go(toState, toParams);
+          }
+        );
       }
     }
   };

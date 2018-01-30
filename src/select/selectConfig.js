@@ -48,7 +48,8 @@
         templateUrl: "/app/src/select/templates/addProject.html",
         data: {
           requiresLogin: true
-        }      });
+        }
+      });
   };
   
 }());
