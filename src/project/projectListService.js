@@ -66,6 +66,7 @@
       getSelectedIds: getSelectedIds,
       getSelectedProjects: getSelectedProjects,
       getSql: getSql,
+      gotProjects: gotProjects,
       hasNextID: hasNextID,
       hasPreviousID: hasPreviousID,
       hasProjects: hasProjects,
@@ -119,7 +120,8 @@
      *  @return {Object}
      */
     function getMasterList() {
-      if (service.hasProjects()) {
+    	  /*	 Did we already retrieve the brief descriptions? */
+      if (service.gotProjects()) {
         return service.masterList;
       }
       else {
@@ -181,7 +183,18 @@
       return service.masterList.sql;
     }
     
-    
+    /**
+     *  @name gotProjects
+     *  @desc Has the masterList been initialized?
+     *  @return {Boolean}
+     */
+    function gotProjects() {
+      if (typeof service.masterList != "undefined") {
+        return true;
+      }
+      return false;
+    }
+
     function hasNextID() {
       return service.masterList.next != -1;
     }
@@ -317,8 +330,9 @@
      */
     function setAllProjectResults(response, projectID) {
       service.masterList.allProjects = response.data.descriptions;
+      service.masterList.gotProjects = true;
       if (typeof projectID == "undefined" || projectID < 0) {
-        if (typeof service.masterList.selectIds != "undefined" && 
+        if (typeof service.masterList.selectedIds != "undefined" && 
             service.masterList.selectIds.length) {
           projectID = service.masterList.selectIds[0];
           setProjectID(projectID);
