@@ -1,5 +1,12 @@
 (function() {
 
+  /**
+   *  @name loginInjector
+   *  @desc A factory for a service that injects an opportunity for the user
+   *        to authenticate in the middle of a request for a state change to
+   *        a view that requires authentication. 
+   */
+  
   "use strict";
 
   angular
@@ -9,6 +16,7 @@
   LoginInjector.$inject = ["$q", "$injector", "$timeout"];
 
   function LoginInjector($q, $injector, $timeout) {
+
     /* Avoid `Uncaught Error: [$injector:cdep] Circular dependency found` */
     /* http://brewhouse.io/blog/2014/12/09/authentication-made-simple-in-single-page-angularjs-applications.html */ 
     $timeout(function () { 
@@ -24,6 +32,7 @@
     return service;
 
     function responseError(rejection) {
+      /* Only handle 401 errors */
       if (rejection.status !== 401) {
         return rejection;
       }

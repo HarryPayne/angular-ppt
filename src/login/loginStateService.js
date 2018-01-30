@@ -82,7 +82,10 @@
             $state.go(currentState, currentParams);
           },
           function () {
-            if (currentState && currentState.data.loginRequired) {
+            if (_.first(service.currentState.name.split(".")) == "project") {
+              $state.go("project.detail", service.currentParams);
+            }
+            else if (currentState && currentState.data.loginRequired) {
               $state.go("select.home");
             }
             else if (currentState) {

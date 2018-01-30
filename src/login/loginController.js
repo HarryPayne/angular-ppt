@@ -33,19 +33,27 @@
         vm.login_token = response.data.csrf_token;
       });
 
-    this.cancel = $scope.dismiss;
+    this.cancel = cancelLogin;
     this.submit = submitLogin;
+    this.status = "";
   
     function submitLogin(username, password) {
+      vm.login_error = 0;
       loginApiService.login(vm.login_token, username, password)
         .then(
           function (user) {
             $uibModalInstance.close(user);
           },
           function ($scope) {
-            $uibModalInstance.dismiss("cancelled");
+            if ($scope.status == 401) {
+              vm.login_error = 401;
+            };
           }
         );
+    }
+
+    function cancelLogin() {
+      $scope.$dismiss();
     }
     
   };
