@@ -18,13 +18,17 @@
     .module("app.select")
     .controller("Select", Select);
   
-  Select.$inject = ["$scope", "$state", "attributesService", "attributesPromise", 
-                    "loginStateService", "modalConfirmService", "projectDataService", 
-                    "projectListPromise", "projectListService", "selectStateService"];
+  Select.$inject = ["$scope", "$state", "attributesService", "formlyFields", 
+                    "loginStateService", "modalConfirmService", 
+                    "pristineProject", 
+                    "projectDataService", "projectListPromise", 
+                    "projectListService", "selectStateService"];
   
-  function Select($scope, $state, attributesService, attributesPromise, 
-                  loginStateService, modalConfirmService, projectDataService, 
-                  projectListPromise, projectListService, selectStateService) {
+  function Select($scope, $state, attributesService, formlyFields, 
+                  loginStateService, modalConfirmService, 
+                  pristineProject, 
+                  projectDataService, projectListPromise, 
+                  projectListService, selectStateService) {
     
     this.state = $state;
     
@@ -32,6 +36,10 @@
     this.ds = projectDataService;
     this.logss = loginStateService;
 
+	this.formlyFields = formlyFields;
+    this.pristineProject = pristineProject;
+	this.briefDescriptions = projectListPromise;
+	
     this.ls = projectListService;
     this.masterList = this.ls.getMasterList;
     this.jumpToProject = this.ls.jumpToProject;

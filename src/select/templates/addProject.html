@@ -1,4 +1,4 @@
-<form name="addProject" class="form-horizontal container">
+<!--form name="addProject" class="form-horizontal container">
   <div project-data-display
     datasource="select.as.getProjectAttributes('description')"
     error="select.ds.error"
@@ -10,4 +10,16 @@
     success="select.ds.success"
     table="'description'"
     ></div>  
-</form>
+</form-->
+
+<div class="container">
+  <h4 class="clearfix">Select a Project</h4>
+
+  <formly-form model="select.pristineProject" fields="select.as.formlyFields.description">
+    <span class="col-sm-4">
+      <button type="button" ng-click="select.ds.addProject(select.pristineProject)"> Save </button>
+      <button type="button" ng-click="select.ds.cancelAddProject()" class=""> Cancel </button>
+    </span>
+  </form>
+
+</div>

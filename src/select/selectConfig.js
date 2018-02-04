@@ -25,7 +25,7 @@
           }
         ],
         resolve: {
-          attributesPromise: ["attributesService", 
+          formlyFields: ["attributesService", 
             function(attributesService) {
               // Make sure formlyFields and project list are available for init.
               return attributesService.getFormlyFieldObj();
@@ -33,11 +33,15 @@
           ],
           projectListPromise: ["projectListService",
             function(projectListService) {
-              return projectListService.getMasterList()
+              return projectListService.getMasterList();
+            }
+          ],
+          pristineProject: ["projectDataService",
+            function(projectDataService) {
+              return projectDataService.getNewPristineModel();
             }
           ]
         }
-
       })
       .state("select.home", {
         url: "/home",

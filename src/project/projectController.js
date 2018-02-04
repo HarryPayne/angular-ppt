@@ -14,7 +14,7 @@
   
   Project.$inject = ["$scope", "$state", "projectDataService", "projectListService", 
                      "attributesService", "modalConfirmService", "loginStateService",
-                     "attributesPromise", "projectListPromise"];
+                     "attributesPromise", "projectListPromise", "projectDataPromise"];
   
   function Project($scope, $state, projectDataService, projectListService, 
                    attributesService, modalConfirmService, loginStateService,

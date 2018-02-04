@@ -120,7 +120,7 @@
      *  @return {Object}
      */
     function getMasterList() {
-    	  /*	 Did we already retrieve the brief descriptions? */
+      /*  Did we already retrieve the brief descriptions? */
       if (service.gotProjects()) {
         return service.masterList;
       }
@@ -333,13 +333,13 @@
       service.masterList.gotProjects = true;
       if (typeof projectID == "undefined" || projectID < 0) {
         if (typeof service.masterList.selectedIds != "undefined" && 
-            service.masterList.selectIds.length) {
-          projectID = service.masterList.selectIds[0];
+            service.masterList.selectedIds.length) {
+          projectID = service.masterList.selectedIds[0];
           setProjectID(projectID);
         }
         else {
           var selectedIds = service.getIDListFromAllProjects();
-          setProjectID(selectedIds[0], selectedIds);
+          service.masterList.selectedIds = setProjectID(selectedIds[0], selectedIds);
         }
       }
     };
@@ -388,12 +388,16 @@
      *        of projectIDs to be saved as the list of selected projects.
      */
     function setProjectID(projectID, selectedIds) {
+      if (typeof selectedIds == "undefined") {
+          selectedIds = service.masterList.selectedIds;
+      }
       if (projectID) {
         projectID = parseInt(projectID);
         service.masterList.projectID = projectID;
 
         /** do we recognize this project? */
-        var index = service.masterList.selectedIds.indexOf(projectID);
+        /* TODO: This next bit, for handling new projects, is not tested */
+        var index = selectedIds.indexOf(projectID);
         if (projectID > 0 && index == -1) {
 
           /** then maybe this projectID is a mistake, but maybe we just added a 
@@ -410,30 +414,27 @@
         if (index > -1) {
           service.masterList.index = index;
           if (index > 0) {
-            service.masterList.previous = service.masterList.selectedIds[index-1];
+            service.masterList.previous = selectedIds[index-1];
           } 
           else {
             service.masterList.previous = -1;
           }
-          if (index < service.masterList.selectedIds.length) {
-            service.masterList.next = service.masterList.selectedIds[index+1];
+          if (index < selectedIds.length) {
+            service.masterList.next = selectedIds[index+1];
           }
           else {
             service.masterList.next = -1;
           }
+          service.masterList.projectName = service.masterList.allProjects[index].name
         }
-        _.each(service.masterList.allProjects, function(proj){
-          if (proj.projectID == projectID) {
-            service.masterList.projectName = proj.name;
-          }
-        });
         
         service.masterList.selectedProjects = _.filter(service.masterList.allProjects, function(project) {
-          return _.contains(service.masterList.selectedIds, project.projectID);
+          return _.contains(selectedIds, project.projectID);
         });
 
       }
       service.SaveState();
+      return selectedIds;
     };
 
     /**
@@ -458,20 +459,28 @@
      */
     function updateAllProjects(projectID) {
       var deferred = $q.defer();
-      var request = {
-          method: "POST",
-          url: "/getBriefDescriptions",
-          headers: {
-            "Content-Type": "application/json; charset=UTF-8",
-            "X-CSRFToken": window.csrf_token
-          }
+      if (service.waitingForBriefDescriptions == true) {
+        return;
       }
-      $http(request)
-        .then(function(response) {
-          service.setAllProjectResults(response, projectID);
-          deferred.resolve(service.masterList.projectID);
-        });
-      return deferred.promise;
+      else {
+        var request = {
+            method: "POST",
+            url: "/getBriefDescriptions",
+            headers: {
+              "Content-Type": "application/json; charset=UTF-8",
+              "X-CSRFToken": window.csrf_token
+            }
+        }
+        service.waitingForBriefDescriptions = true;
+        service.promiseForBriefDescriptions = $http(request)
+          .then(function(response) {
+            service.setAllProjectResults(response, projectID);
+            delete service.waitingForBriefDescriptions;
+            deferred.resolve(service.masterList);
+            return service.masterList.projectID;
+          });
+        return deferred.promise;
+      }
     };
     
   }

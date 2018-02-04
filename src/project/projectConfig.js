@@ -28,6 +28,11 @@
           requiresLogin: false,
           viewUrl: "/app/src/project/project.html"
         },
+        onEnter: ["projectDataService", 
+          function(projectDataService) {
+            projectDataService.initService();
+          }
+        ],
         resolve: {
           attributesPromise: ["attributesService", 
             function(attributesService) {
@@ -37,7 +42,7 @@
           ],
           projectListPromise: ["projectListService",
             function(projectListService) {
-              return projectListService.getMasterList()
+              return projectListService.getMasterList();
             }
           ],
           projectDataPromise: ["projectDataService", "$stateParams",
@@ -176,6 +181,8 @@
     /* Set up for Bootstrap horizontal form by changing the label wrapper and
      * the template. The templates are at the bottom of the project.html
      * template. */
+    formlyConfigProvider.extras.removeChromeAutoComplete = true;
+    formlyConfigProvider.extras.explicitAsync = true;
     formlyConfigProvider.removeWrapperByName('bootstrapLabel');
     formlyConfigProvider.setWrapper({
       name: 'bootstrapLabel',

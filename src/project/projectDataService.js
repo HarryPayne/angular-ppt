@@ -2,13 +2,13 @@
 
   /**
    *  @name projectDataService
-   *  @desc A factory for the primary service that manages the data associated 
+   *  @desc A factory for the primary service that manages the data associated
    *        with the Project tab. That is a lot, and it gets help from a couple
-   *        of other services: 
+   *        of other services:
    *
-   *          attributesService - for lower level data attribute management 
+   *          attributesService - for lower level data attribute management
    *            (from the app.attributes module).
-   *          loginStateService - a service from the app.login module for 
+   *          loginStateService - a service from the app.login module for
    *            logging in and out and reporting user roles.
    *          projectListService - for the data that support the Previous and
    *            Next top-level tabs, and also remember just which projects were
@@ -23,20 +23,20 @@
    *            string in the location bar.
    */
 
-  //"use strict";
+  "use strict";
   
   angular
     .module("app.project")
-    .factory("projectDataService", projectDataService);
+    .factory("projectDataService", ProjectDataService);
   
-  projectDataService.$inject = ["$rootScope", "$http", "$state", "$stateParams", 
+  ProjectDataService.$inject = ["$rootScope", "$http", "$state", "$stateParams",
                                 "$q", "$location", "$timeout", "moment",
-                                "attributesService", "loginStateService", 
+                                "attributesService", "loginStateService",
                                 "projectListService", "stateLocationService"];
   
-  function projectDataService($rootScope, $http, $state, $stateParams, $q,
-                              $location, $timeout, moment, attributesService, 
-                              loginStateService, projectListService, 
+  function ProjectDataService($rootScope, $http, $state, $stateParams, $q,
+                              $location, $timeout, moment, attributesService,
+                              loginStateService, projectListService,
                               stateLocationService) {
     
     /** service to be returned by this factory */
@@ -56,18 +56,19 @@
       getFormlyFields: attributesService.getFormlyFields,
       getModelObject: getModelObject,
       getModelValue: getModelValue,
+      getNewPristineModel: getNewPristineModel,
       getProjectData: getProjectData,
       getProjectDataValues: getProjectDataValues,
       getProjectAttributes: attributesService.getProjectAttributes,
       getProjectDataFromLocation: getProjectDataFromLocation,
-      hasProjectModel: hasProjectModel,
       getSelectedDetail: getSelectedDetail,
+      hasProjectModel: hasProjectModel,
       hideDetails: hideDetails,
       initService: initService,
       isSelected: isSelected,
       jsonToModel: jsonToModel,
-      jumpToAtachFile: jumpToAtachFile,
       jumpToAddForm: jumpToAddForm,
+      jumpToAtachFile: jumpToAtachFile,
       jumpToNewProject: jumpToNewProject,
       modelToJSON: modelToJSON,
       printValue: attributesService.printValue,
@@ -80,11 +81,12 @@
       showEditSuccess: showEditSuccess,
       stateParams: $stateParams,
       tableToJSON: tableToJSON,
+      updatePristineProject: updatePristineProject,
       valueToJSON: valueToJSON
     };
-    
+
     initService();
-    
+
     $rootScope.$on("savestate", service.SaveState);
     $rootScope.$on("restorestate", service.RestoreState);
     $rootScope.$on("$locationChangeSuccess", function() {
@@ -93,7 +95,7 @@
       if (_.first($state.current.name.split(".")) == "project") {
 
         service.RestoreState();
-        if (typeof service.projectID == "undefined" || 
+        if (typeof service.projectID == "undefined" ||
             parseInt($state.params.projectID) != service.projectID) {
           service.initService();
         }
@@ -104,18 +106,18 @@
     
     /**
      * @name addProject
-     * @desc Start the process of creating a new project by collecting the 
+     * @desc Start the process of creating a new project by collecting the
      *        attributes of the new project and making a call to the server
      *        for a fresh csrf token.
      */
     function addProject() {
-      /** Gather all of the form data values by pulling them from the 
+      /** Gather all of the form data values by pulling them from the
        *  attributes in memory that are marked as associated with the
        *  description table. We don't look at the form -- we use it mostly
        *  for validation (if there were any required fields) and the unsaved
-       *  data check. 
+       *  data check.
        *  */
-      var formData = attributesService.getFormData('description', []);
+      var formData = attributesService.getFormData("description", []);
       /* start with a fresh csrf token */
       var request = {
         method: "POST",
@@ -197,7 +199,7 @@
     /**
      *  @name currentMode
      *  @desc return the current mode
-     *  @return {string} "view" if state name is "project.detail" else state 
+     *  @return {string} "view" if state name is "project.detail" else state
      *        name
      */
     function currentMode() {
@@ -213,7 +215,7 @@
     /**
      *  @name currentSubtab
      *  @desc return the current project edit subtab
-     *  @return {string} "view" if state name is "project.detail" else state 
+     *  @return {string} "view" if state name is "project.detail" else state
      *        name
      */
     function currentSubtab() {
@@ -236,12 +238,12 @@
     
     /**
      * @name flatten
-     * @desc Flatten the data for one choice of sub-object by assigning those 
+     * @desc Flatten the data for one choice of sub-object by assigning those
      *       values to service.projectModel. Parameters specify which list of
      *       many-to-one items with respect to a project, and which item in
      *       that list, by index is to be flattened.
      * @param {string} list_name    The name of the attribute in datasource()
-     *                              chosen for flattening ("comments", or 
+     *                              chosen for flattening ("comments", or
      *                              "dispositions").
      * @param {number} index        The index of the selected item.
      */
@@ -267,15 +269,6 @@
     }
     
     /**
-     * @name getModelValue
-     * @desc A method that returns the value of the requested model attribute.
-     * @param {string} attr_name - name of the requested attribute.
-     */
-    function getModelValue(attr_name) {
-      return service.projectModel[attr_name];
-    }
-
-    /**
      * @name getModelObject
      * @desc A function that returns the entire data model for a project, if
      *       there is one in hand. Otherwise, return a promise for one that
@@ -285,23 +278,55 @@
      */
     function getModelObject(params) {
       if (service.hasProjectModel()) {
+        // The wait is over
+        service.waitingForModelObject = false;
         return service.projectModel;
       }
       else {
-        return service.getProjectData(params);
+        if (service.waitingForModelObject == true) {
+          // If we are waiting, do nothing
+          return;
+        }
+        else {
+          // Return a promise and remember we are waiting
+          service.waitingForModelObject = true;
+          return service.getProjectData(params);
+        }
       }
-      
+    }
+    
+    /**
+     * @name getModelValue
+     * @desc A method that returns the value of the requested model attribute.
+     * @param {string} attr_name - name of the requested attribute.
+     */
+    function getModelValue(attr_name) {
+      return service.projectModel[attr_name];
+    }
+
+    /**
+     *  @name getNewPristineModel
+     *  @desc Return
+     */
+    function getNewPristineModel() {
+//       if (service.waitingForPristineModel == true) {
+//         return;
+//       }
+//       else {
+//         service.waitingForPristineModel == true;
+        return service.updatePristineProject();
+//       }
     }
     
     /**
      *  @name getProjectData
      *  @desc Get all of the project attributes values from the server. In a
      *        callback, these values are merged with attributes held by the
-     *        attributesService from the app.attributes module/
+     *        attributesService from the app.attributes module.
      *  @param {Object} params - a $stateParams object or a custom object
      *        with the same attributes, passed to the callback function.
      *  @callback setProjectData
-     *  @return {Object} - a promise that is resolved once the response 
+     *  @return {Object} - a promise that is resolved once the response
      *        from the back end has been saved.
      */
     function getProjectData(params) {
@@ -333,7 +358,7 @@
     
     /**
      * @name getProjectDataValues
-     * @desc Get all data for a project as an object with attributes and 
+     * @desc Get all data for a project as an object with attributes and
      *       save them.
      * @param {Object} params - a $stateParams object or a custom object
      *       with the same attributes, passed to the callback function.
@@ -363,7 +388,7 @@
     /**
      *  @name getProjectDataFromLocation
      *  @desc Generate an analogue for $state and $stateParams by looking at
-     *        the location instead of state, and use those parameters for 
+     *        the location instead of state, and use those parameters for
      *        getting data for that project. This allows you to change the
      *        projectID in the location bar and have the application change
      *        state to match what you typed.
@@ -377,21 +402,11 @@
       }
     }
 
-    function hasProjectModel() {
-      if (typeof service.projectModel != "undefined" && 
-          Object.keys(service.projectModel).length > 0) {
-        return true;
-      }
-      else {
-        return false;
-      }
-    }
-    
     /**
      * @name getSelectedDetail
-     * @desc Given the name of a project model attribute that corresponds to a 
+     * @desc Given the name of a project model attribute that corresponds to a
      *       list of objects, and an object with primary key attributes and
-     *       values, use the values to filter the list to find the selected 
+     *       values, use the values to filter the list to find the selected
      *       one, and return it.
      * @param {String} name of the project attribute
      * @param {Object} holding primary key values
@@ -427,15 +442,30 @@
     }
     
     /**
+     *  @name hasProjectModel
+     *  @desc See if there is a project model with attributes and report
+     *        the result
+     */
+    function hasProjectModel() {
+      if (typeof service.projectModel != "undefined" &&
+          Object.keys(service.projectModel).length > 0) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+    
+    /**
      *  @name hideDetails
      *  @desc a function for canceling out of Add a Comment or Add a Disposition
      *        by navigating away to the project edit Comments or Dispositions
      *        sub-tab, respectively. Add a Comment users may not have a role
      *        that gives them access to the edit view, in which case they are
      *        taken back to view mode/state project.detail.
-     * @param {string} table_name - "comment" for Add a Comment, "disposition" 
+     * @param {string} table_name - "comment" for Add a Comment, "disposition"
      *        for Add a Disposition.
-     * @param {Object[]} keys - 
+     * @param {Object[]} keys -
      */
     function hideDetails(table_name, keys) {
       var selected = attributesService.updateProjAttrsFromRawItem(table_name, keys);
@@ -451,7 +481,7 @@
      *  @name initService
      *  @desc called onEnter from projectConfig.js to ensure that data for the
      *        report from the backend are already in hand (or promised).
-     * @return {Object} promise - a promise that is resolved after project 
+     * @return {Object} promise - a promise that is resolved after project
      *        have been received and saved.
      */
     function initService() {
@@ -465,7 +495,7 @@
       var saved_projectID = projectListService.getProjectID();
 
       projectListService.setProjectID(state_projectID);
-      if (state_projectID && state_projectID > -1 
+      if (state_projectID && state_projectID > -1
           && saved_projectID != state_projectID){
         /* then the data we want is not what we have, so ... */
         service.getProjectDataValues($stateParams);
@@ -483,13 +513,13 @@
 
     /**
      * @name isSelected
-     * @desc Return the truth of the statement "this is the item you want to 
+     * @desc Return the truth of the statement "this is the item you want to
      *        work on." The primary key values of the item are compared with
      *        the stateParam values for each key.
      */
     function isSelected(table_name, index, keys) {
-      if (typeof index == "undefined" || 
-          typeof keys == "undefined" || 
+      if (typeof index == "undefined" ||
+          typeof keys == "undefined" ||
           keys.length == 0 ||
           typeof service.projectModel[table_name] == "undefined" ||
           Object.keys(service.projectModel[table_name]).length == 0) {
@@ -501,8 +531,8 @@
         _.each(keys, function(key){
           var state_value = service.stateParams[key];
           var item_value = item[key].toString();
-          if ((typeof state_value != "undefined" 
-               && typeof item_value != "undefined" 
+          if ((typeof state_value != "undefined"
+               && typeof item_value != "undefined"
                && state_value == item_value)) {
             selected =  true;
           }
@@ -518,10 +548,6 @@
       return selected;
     }
 
-    function jumpToAtachFile() {
-      $state.go("project.attach", {projectID: service.projectID});
-    };
-    
     /**
      *  @name jsonToModel
      *  @desc Return a model that contains date objects built from a json
@@ -561,14 +587,14 @@
           if (values[1] == "") values[1] = null;
           var range_model = jsonToModel(values);
 
-          if ((range_model[0].hasOwnProperty("_isAMomentObject") || values[0] == null) && 
+          if ((range_model[0].hasOwnProperty("_isAMomentObject") || values[0] == null) &&
               (range_model[1].hasOwnProperty("_isAMomentObject") || values[1] == null)) {
 
              model[key] = moment.range(range_model[0], range_model[1]);
           }
         } 
         // Check for string value that looks like a single date.
-        else if (typeof json_value === "string" && (match = json_value.match(/^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/))) {
+        else if (typeof json_value === "string" && (match = json_value.match(/^([+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/))) {
           model[key] = moment.utc(match[0]);
         } 
         
@@ -608,6 +634,10 @@
       $state.go("project." + table_name + ".add", {projectID: $state.params.projectID});
     }
 
+    function jumpToAtachFile() {
+      $state.go("project.attach", {projectID: service.projectID});
+    };
+    
     /**
      * @name jumpToNewProject
      * @desc After a new project has been created, jump to the edit view of 
@@ -862,6 +892,32 @@
       return form_data;
     }
         
+    /**
+     *  @name updatePristineProject
+     *  @desc Ask the server for a pristine description table data model, 
+     *        used by the form for creating a new project. Obtained by asking 
+     *        the backend for project zero.
+     */
+    function updatePristineProject() {
+      var deferred = $q.defer();
+      var request = {
+        method: "POST",
+        url: "/getProjectAttributes/0",
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+          "X-CSRFToken": window.csrf_token
+        }
+      };
+      $http(request)
+      .then(function(response) {
+        service.pristineModel = jsonToModel(response.data.formData);
+        delete service.waitingForPristineModel;
+        deferred.resolve(service.pristineModel);
+        }
+      );
+      return deferred.promise;
+    }
+    
     /**
      * @name valueToJSON
      * @desc Convert a value in the project model to JSON. The primary use is
