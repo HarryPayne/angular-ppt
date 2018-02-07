@@ -7,7 +7,7 @@
 
   <div jump-to-project-choice 
     on-submit="select.jumpToProject"
-    label="'Select'" options="select.masterList().allProjects" 
+    label="'Select'" options="select.masterList.allProjects" 
     help="'Select a project from the list and go to that project.'"></div>
 
   <div class="form-horizontal">
@@ -146,7 +146,7 @@
 
   <div id="searchTextResult" ng-show="select.ss.getMasterList().searchText" class="col-xs-offset-2 col-lg-offset-2 col-xs-10 col-lg-10">
     <p>There are {{ filtered.length }} matches:</p>
-    <dl ng-repeat="project in filtered = (select.masterList().allProjects | nameSearch:select.ss.getMasterList().searchText:select.ss.getMasterList().name_absLogic:select.ss.getMasterList().finalID)"> 
+    <dl ng-repeat="project in filtered = (select.briefDescriptions.allProjects | nameSearch:select.ss.getMasterList().searchText:select.ss.getMasterList().name_absLogic:select.ss.getMasterList().finalID)"> 
       <dt>{{project.projectID}}. <a href="" ng-click="select.jumpToProject(project.projectID)">{{project.name}}</a>
       </dt>
       <!-- dd read-more content="{{ project.abstract }}" limit="200">></dd -->

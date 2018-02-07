@@ -3,3 +3,5 @@
 /.settings/
 /vendor/
 /node_modules/
+/dist/
+/server/

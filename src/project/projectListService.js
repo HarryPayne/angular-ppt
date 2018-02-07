@@ -1,5 +1,3 @@
-(function() {
-  
   /**
    *  @name projectListService
    *  @desc A factory for the service that maintains a list of project short
@@ -66,7 +64,7 @@
       getSelectedIds: getSelectedIds,
       getSelectedProjects: getSelectedProjects,
       getSql: getSql,
-      gotProjects: gotProjects,
+      gotMasterList: gotMasterList,
       hasNextID: hasNextID,
       hasPreviousID: hasPreviousID,
       hasProjects: hasProjects,
@@ -86,8 +84,9 @@
     };
   
     service.RestoreState();
+//    service.masterList = masterList;
     if (typeof(service.masterList) == "undefined") {
-      service.initModel();
+      service.updateAllProjects();
     } 
 
     $rootScope.$on("savestate", service.SaveState);
@@ -109,8 +108,8 @@
      *  @desc Return the list of projectIDs for all available projects
      *  @return {Number[]}
      */
-    function getIDListFromAllProjects() {
-      return _.map(service.masterList.allProjects, function(item) {
+    function getIDListFromAllProjects(masterList) {
+      return _.map(masterList.allProjects, function(item) {
         return item.projectID;});
     };
 
@@ -121,12 +120,7 @@
      */
     function getMasterList() {
       /*  Did we already retrieve the brief descriptions? */
-      if (service.gotProjects()) {
-        return service.masterList;
-      }
-      else {
-        return service.updateAllProjects()
-      }
+      return service.masterList;
     };
 
     /**
@@ -184,15 +178,15 @@
     }
     
     /**
-     *  @name gotProjects
+     *  @name gotMasterList
      *  @desc Has the masterList been initialized?
      *  @return {Boolean}
      */
-    function gotProjects() {
-      if (typeof service.masterList != "undefined") {
-        return true;
+    function gotMasterList() {
+      if (typeof service.masterList == "undefined") {
+        return false;
       }
-      return false;
+      return true;
     }
 
     function hasNextID() {
@@ -292,7 +286,8 @@
      *  @desc Restore the service.masterList object from client session storage
      */
     function RestoreState() {
-      if (typeof sessionStorage.projectListService != "undefined") {
+      if (typeof sessionStorage.projectListService != "undefined" &&
+          sessionStorage.projectListService != "{}") {
         service.masterList = angular.fromJson(sessionStorage.projectListService);
       }
     };
@@ -316,32 +311,26 @@
     /**
      *  @name setAllProjectResults
      *  @desc Callback to save the response to a backend request for a complete
-     *        list of project short descriptions sent by updateAllProjects().
+     *        list of project brief descriptions sent by updateAllProjects().
      *  @param {Object} response - JSON response containing a list of project
      *        brief descriptions.
      *  @param {Number} [projectID=service.masterList.selectIds[0] || -1] - the 
      *        projectID to be configured as the current project.
      *
      *  The idea is that the list of available projects be loaded at the start 
-     *  of a session an then re-used. But you, or some other user, might have
+     *  of a session and then re-used. But you, or some other user, might have
      *  added a new project that you want to work on. So you need to be able to
      *  update the list with out disrupting your workflow, which means not 
      *  changing the list of selected projects or the current project.
      */
     function setAllProjectResults(response, projectID) {
-      service.masterList.allProjects = response.data.descriptions;
-      service.masterList.gotProjects = true;
+      var masterList = new Object;
+      masterList.allProjects = response.data.descriptions;
+      masterList.selectedIds = service.getIDListFromAllProjects(masterList);
       if (typeof projectID == "undefined" || projectID < 0) {
-        if (typeof service.masterList.selectedIds != "undefined" && 
-            service.masterList.selectedIds.length) {
-          projectID = service.masterList.selectedIds[0];
-          setProjectID(projectID);
-        }
-        else {
-          var selectedIds = service.getIDListFromAllProjects();
-          service.masterList.selectedIds = setProjectID(selectedIds[0], selectedIds);
-        }
+        projectID = masterList.selectedIds[0];
       }
+      service.masterList = service.setProjectID(projectID, masterList);
     };
     
     /**
@@ -370,12 +359,13 @@
       var index = selectedIds.indexOf(service.masterList.projectID);
       if (index < 0) {
         var projectID = selectedIds[0];
-        service.setProjectID(projectID, selectedIds);
+        service.setProjectID(projectID, service.masterList, selectedIds);
       }
       
-      service.masterList.selectedProjects = _.filter(service.masterList.allProjects, function(project) {
-        return _.contains(service.masterList.selectedIds, project.projectID);
-      });
+      service.masterList.selectedProjects =  
+        _.filter(service.masterList.allProjects, function(project) {
+          return _.contains(service.masterList.selectedIds, project.projectID);
+        });
     }
 
     /**
@@ -384,15 +374,23 @@
      *        service.masterList.selectedIds
      *  @param {Number} projectID - the projectID to be configured as the 
      *        current project.
+     *  @param {Object[]} masterList - list of project brief descriptions
      *  @param {Number[]} [selectedIds=service.masterList.selectedIds] - a list 
      *        of projectIDs to be saved as the list of selected projects.
      */
-    function setProjectID(projectID, selectedIds) {
+    function setProjectID(projectID, masterList, selectedIds) {
+      if (typeof masterList == "undefined") {
+        if (typeof service.masterList != "undefined") {
+          masterList = service.masterList;
+        }
+      }
       if (typeof selectedIds == "undefined") {
-          selectedIds = service.masterList.selectedIds;
+        if (typeof masterList.selectedIds == "object") {
+          selectedIds = masterList.selectedIds;
+        }
+        else return masterList; 
       }
       if (projectID) {
-        projectID = parseInt(projectID);
         service.masterList.projectID = projectID;
 
         /** do we recognize this project? */
@@ -405,36 +403,36 @@
           service.updateAllProjects(projectID)
             .then(function(projectID) {
               if (typeof selectedIds != "undefined") {
-                service.masterList.selectedIds = selectedIds;
+                masterList.selectedIds = selectedIds;
               }
-              index = service.masterList.selectedIds.indexOf(projectID);
+              index = masterList.selectedIds.indexOf(projectID);
             }); 
         }
 
         if (index > -1) {
-          service.masterList.index = index;
+          masterList.index = index;
           if (index > 0) {
-            service.masterList.previous = selectedIds[index-1];
+            masterList.previous = selectedIds[index-1];
           } 
           else {
-            service.masterList.previous = -1;
+            masterList.previous = -1;
           }
           if (index < selectedIds.length) {
-            service.masterList.next = selectedIds[index+1];
+            masterList.next = selectedIds[index+1];
           }
           else {
-            service.masterList.next = -1;
+            masterList.next = -1;
           }
-          service.masterList.projectName = service.masterList.allProjects[index].name
+          masterList.projectName = masterList.allProjects[index].name
         }
         
-        service.masterList.selectedProjects = _.filter(service.masterList.allProjects, function(project) {
+        masterList.selectedProjects = _.filter(masterList.allProjects, 
+                                               function(project) {
           return _.contains(selectedIds, project.projectID);
         });
 
       }
-      service.SaveState();
-      return selectedIds;
+      return masterList;
     };
 
     /**
@@ -458,31 +456,21 @@
      *        needs to be aware that it might be absent.
      */
     function updateAllProjects(projectID) {
-      var deferred = $q.defer();
-      if (service.waitingForBriefDescriptions == true) {
-        return;
-      }
-      else {
-        var request = {
-            method: "POST",
-            url: "/getBriefDescriptions",
-            headers: {
-              "Content-Type": "application/json; charset=UTF-8",
-              "X-CSRFToken": window.csrf_token
-            }
+      var request = {
+        method: "POST",
+        url: "/getBriefDescriptions",
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+          "X-CSRFToken": window.csrf_token
         }
-        service.waitingForBriefDescriptions = true;
-        service.promiseForBriefDescriptions = $http(request)
-          .then(function(response) {
-            service.setAllProjectResults(response, projectID);
-            delete service.waitingForBriefDescriptions;
-            deferred.resolve(service.masterList);
-            return service.masterList.projectID;
-          });
-        return deferred.promise;
-      }
+      };
+      service.masterList = $http(request)
+        .then(function(response) {
+          service.setAllProjectResults(response, projectID);
+          return service.masterList;
+          service.SaveState();
+         });
+      return service.masterList;
     };
     
   }
-    
-}());

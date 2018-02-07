@@ -273,12 +273,10 @@ Data attributes:
     }
     
     function getFormlyFieldObj() {
-      if (service.hasFormlyFields()) {
-        return service.formlyFields;
+      if (!service.hasFormlyFields()) {
+        service.updateFormlyFields();
       }
-      else {
-        return service.updateFormlyFields();
-      }
+      return service.formlyFields;
     }
 
     /**
@@ -432,12 +430,11 @@ Data attributes:
     }
 
     function hasFormlyFields() {
-      if (typeof service.formlyFields != "undefined" && 
-          Object.keys(service.formlyFields).length > 0) {
-        return true;
+      if (typeof service.formlyFields == "undefined") {
+        return false;
       }
       else {
-        return false;
+        return true;
       }
     }
 
@@ -684,7 +681,6 @@ Data attributes:
      *        saved
      */
     function updateFormlyFields() {
-      var deferred = $q.defer();
       var request = {
         method: "POST",
         url: "/getFormlyFields",
@@ -693,7 +689,7 @@ Data attributes:
           "X-CSRFToken": window.csrf_token
         }
       };
-      $http(request)
+      service.formlyFields = $http(request)
         .then(function(response) {
           service.formlyFields = response.data;
           service.formlyFieldsDict = new Object;
@@ -705,9 +701,9 @@ Data attributes:
             });
           });
           SaveState();
-          deferred.resolve(service.formlyFields);
+          return service.formlyFields;
         });
-      return deferred.promise;
+      return service.formlyFields;
     }
     
     /**
