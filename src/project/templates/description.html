@@ -11,8 +11,14 @@
   table="'description'"
 /--> 
 
-<h4 class="col-sm-12">Description Attributes</h4>
-<formly-form model="project.ds.projectModel" fields="project.ds.getFormlyFields('description')" >
-      <button type="button" ng-click="ctrl.save(ctrl.table)"> Save </button>
-      <button type="button" ng-click="ctrl.cancel()" ng-show="ctrl.hasCancel()"> Cancel </button>
+<h4>Description Attributes</h4>
+
+<form name="projectForm" form="project.ds.projectFormlyForm" class="form-horizontal" novalidate>
+    <formly-form model="project.ds.projectModel" 
+      fields="project.as.formlyFields['description']" 
+      form="project.ds.projectFormlyForm"
+      options="project.ds.projectFormlyOptions">
+          <button type="button" ng-click="project.ds.saveProject('description')"> Save </button>
+          <button type="button" ng-click="project.cancel()" ng-show="project.hasCancel()"> Cancel </button>
+    </formly-form>
 </form>

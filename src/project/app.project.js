@@ -8,8 +8,6 @@
     .module("app.project", [
         "ui.date", 
         "ui.router",
-        "formly",
-        "formlyBootstrap",
         "ngSanitize",
         "angularMoment"
       ]);

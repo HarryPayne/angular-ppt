@@ -30,14 +30,14 @@
 	ProjectDataService.$inject = ["$rootScope", "$http", "$state", "$stateParams",
 	                              "$q", "$location", "$timeout", "moment",
 	                              "attributesService", "loginStateService",
-	                              "projectListService", "stateLocationService"];
+	                              "modalConfirmService", "projectListService",
+	                              "stateLocationService"];
 	
 	function ProjectDataService($rootScope, $http, $state, $stateParams, $q,
 	                            $location, $timeout, moment, attributesService,
-	                            loginStateService, projectListService,
+	                            loginStateService, modalConfirmService, 
+	                            projectListService,
 	                            stateLocationService) {
-	  
-	//   if ($state.transition != null && typeof $state.transition.then == "function") return;
 	  
 	  /** service to be returned by this factory */
 	  var service = {
@@ -81,6 +81,7 @@
 	    showEditSuccess: showEditSuccess,
 	    stateParams: $stateParams,
 	    tableToJSON: tableToJSON,
+	    unsavedDataPopup: unsavedDataPopup,
 	    updatePristineProject: updatePristineProject,
 	    valueToJSON: valueToJSON
 	  };
@@ -100,6 +101,11 @@
 	        service.initService();
 	      }
 	    }
+	  });
+	  $rootScope.$on("setProjectFormPristine", function() {
+		if (typeof service.projectFormlyForm != "undefined") {
+		  service.projectFormlyForm.$setPristine(true);
+		}
 	  });
 	
 	  return service;
@@ -144,8 +150,8 @@
 	
 	  /**
 	   *  @name changeMode
-	   *  @desc a function for navigating between the views under the Project tab
-	   *        for a specified project
+	   *  @desc a function for navigating between the views under the Project
+	   *        tab for a specified project
 	   *  @param {string} mode - the name of a state under the "project" virtual
 	   *        state or "view" as an alias for "project.detail".
 	   */
@@ -187,8 +193,10 @@
 	    var create_response;
 	    $http(request)
 	      .then(function(create_response) {
-	        service.setProjectData(create_response, {projectID: create_response.data.projectID});
-	        var new_projectID = projectListService.updateAllProjects(create_response.data.projectID);
+	        service.setProjectData(create_response, 
+	        		{projectID: create_response.data.projectID});
+	        var new_projectID = projectListService.updateAllProjects(
+	        		create_response.data.projectID);
 	        return new_projectID;
 	      })
 	      .then(function(new_projectID) {
@@ -226,7 +234,7 @@
 	  
 	  /**
 	   *  @name editMode
-	   *  @desc return the answer to the question "am I in edit mode?"
+	   *  @desc return the truth of the statement "I am in edit mode."
 	   *  @return {Boolean}
 	   */    
 	  function editMode() {
@@ -371,7 +379,8 @@
 	   */
 	  function getProjectDataFromLocation() {
 	    var state = stateLocationService.getStateFromLocation();
-	    if ("projectID" in state.params && state.params.projectID != service.projectID) {
+	    if ("projectID" in state.params &&
+	    	state.params.projectID != service.projectID) {
 	      service.projectID = state.params.projectID;
 	      service.getProjectData(state.params);
 	      projectListService.setProjectID(service.projectID);
@@ -714,7 +723,8 @@
 	  }
 	
 	  function SaveState() {
-	    if (Object.keys(service.projectModel).length == 0) return;
+	    if (typeof service.projectModel == "undefined" ||
+	        Object.keys(service.projectModel).length == 0) return;
 	    
 	    var data = new Object;
 	    data.savedState = stateLocationService.getStateFromLocation();
@@ -731,7 +741,7 @@
 	   *        and handle success/error messages.
 	   */
 	  function setProjectData(result, params) {
-	    service.projectID = params.projectID;
+	    service.projectID = parseInt(result.data.projectID);
 	    service.csrf_token = result.data.csrf_token;
 	    service.success = result.data.success;
 	    service.error = result.data.errors;
@@ -740,7 +750,7 @@
 	    service.SaveState();
 	
 	    // Make the project sent back be the current project:
-	    projectListService.setProjectID(params.projectID);
+	    projectListService.setProjectID(service.projectID);
 	
 	    /** mark the form as $pristine. Only the controller can do that so give
 	        it a ping. */
@@ -859,6 +869,54 @@
 	  }
 	      
 	  /**
+	   *  @name unsavedDataPopup
+	   *  @desc Open a popup and ask how to proceed in the case of attempting to 
+	   *        navigate away from one of the project edit sub-tabs when there 
+	   *        is unsaved data in the form. The  function is bound to the 
+	   *        $stateChangeStart event, and the calling sequence is that of a 
+	   *        handler for this event.
+	   *  @param {Object} event
+	   *  @param {Object} toState
+	   *  @param {Object} toParams
+	   *  @param {Object} fromState
+	   *  @param {Object} fromParams
+	   */
+	  function unsavedDataPopup(event, toState, toParams, fromState, 
+			  				    fromParams) {
+	    service.success = "";
+	    if (typeof service.noCheck != "undefined") {
+	      service.projectFormlyForm.$setPristine(true);
+	      delete service.noCheck;
+	      //$state.go(toState, toParams);
+	    }
+	    
+	    /** if the "projectForm" project editing form has unsaved changes ... */
+	    if (typeof service.projectFormlyForm != "undefined" &&
+	    	service.projectFormlyForm.$dirty) {
+
+	      event.preventDefault();
+
+	      var modalOptions = {
+	          closeText: "Cancel",
+	          actionText: "Continue",
+	          headerText: "Unsaved changes",
+	          bodyText: ["You have unsaved changes. Press Continue to ",
+	        	         "discard your changes and navigate away, or ",
+	                     "press Cancel to stay on this page."].join("")
+	      };
+
+	      /** Open a modal window that asks the question shown above as bodyText,
+	       *  and shows Continue and Cancel buttons for making a response. The
+	       *  promised response is passed to a callback function.
+	       */
+	      modalConfirmService.showModal({}, modalOptions).then(function (response) {
+	        service.projectFormlyOptions.resetModel();
+	        $state.go(toState, toParams);
+	      });
+	    }
+	  }
+
+	  /**
 	   *  @name updatePristineProject
 	   *  @desc Ask the server for a pristine description table data model, 
 	   *        used by the form for creating a new project. Obtained by asking 
@@ -952,7 +1010,7 @@
 	
 	      // Is it one of the tables we know about?
 	      else if (_.filter(attributesService.getFormlyFormNames(), 
-	                      function(name) {return name==this}, 'comment').length > 0) {
+	               function(name) {return name==this}, 'comment').length > 0) {
 	        return tableToJSON(key, value);
 	      }
 	

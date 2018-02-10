@@ -13,13 +13,13 @@
 </form-->
 
 <div class="container">
-  <h4 class="clearfix">Select a Project</h4>
+  <h4 class="clearfix">Add a Project</h4>
 
-  <formly-form model="select.pristineProject" fields="select.as.formlyFields.description">
-    <span class="col-sm-4">
-      <button type="button" ng-click="select.ds.addProject(select.pristineProject)"> Save </button>
-      <button type="button" ng-click="select.ds.cancelAddProject()" class=""> Cancel </button>
-    </span>
-  </form>
+    <formly-form model="select.pristineProject" fields="select.formlyFields.description">
+      <span class="col-sm-4">
+        <button type="button" ng-click="select.ds.addProject(select.pristineProject)"> Save </button>
+        <button type="button" ng-click="select.ds.cancelAddProject()" class=""> Cancel </button>
+      </span>
+    </formly-form>
 
 </div>

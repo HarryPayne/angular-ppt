@@ -2,10 +2,12 @@
   <h3 class="clearfix">Select a Project</h3>
 
   <div jump-to-project-id 
+    class="form-horizontal"
     on-submit="select.jumpToProject" label="'Jump'" 
     help="'Enter a numeric project ID and go to that project.'"></div>
 
   <div jump-to-project-choice 
+    class="form-horizontal"
     on-submit="select.jumpToProject"
     label="'Select'" options="select.masterList.allProjects" 
     help="'Select a project from the list and go to that project.'"></div>

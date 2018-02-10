@@ -10,7 +10,7 @@
         &nbsp;&nbsp;&nbsp;&nbsp;
         <span ng-show="currentUser.roles.length > 0">Attach a File</span>
       </span>
-      <h1>{{ project.masterList().projectID}}: {{project.masterList().projectName}}</h1>
+      <h1>{{ project.masterList.projectID}}: {{project.masterList.projectName}}</h1>
       <table class="table">
         <tr 
           ng-repeat="attr in project.attributes() track by $index" 

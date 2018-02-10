@@ -1,4 +1,3 @@
-(function() {
   // http://weblogs.asp.net/dwahlin/building-an-angularjs-modal-service
   
   "use strict";
@@ -59,5 +58,3 @@
       return service.show(customDefaults, customOptions);
     };
   }
-    
-}());

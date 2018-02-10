@@ -9,7 +9,7 @@ angular
   .module("app.project")
   .config(projectConfig);
 
-projectConfig.$inject = ["$stateProvider", "formlyConfigProvider"];
+projectConfig.$inject = ["$stateProvider"];
 
 function projectConfig($stateProvider, formlyConfigProvider) {
   /* Declare states under the project tab. */

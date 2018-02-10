@@ -1,6 +1,10 @@
 (function() {
 
   angular
-    .module("app.attributes", ["ui.router"]);
+    .module("app.attributes", [
+    	"ui.router", 
+    	"formly", 
+    	"formlyBootstrap", 
+    	"ui.bootstrap"]);
 
 }());

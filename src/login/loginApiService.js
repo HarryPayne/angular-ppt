@@ -1,5 +1,3 @@
-(function() {
-  
   /**
    *   @name loginApiService
    *   @desc A factory for a service that sends login information to the server
@@ -63,7 +61,10 @@
         .then(service.deleteAndGo);
     };
 
-    
+    /**
+     * 	@name logoutRequest
+     * 	@desc Logout on the back end.
+     */
     function logoutRequest() {
       var request = {
           url: "/logout",
@@ -76,18 +77,15 @@
       return $http(request)
     }
 
+    /**
+     * 	@name deleteAndGo
+     *  @desc Remove the currentUser object and the JWT. Transition to the
+     *  	  current state. If the current state requires login, then the
+     *  	  user will be redirected to a safe landing elsewhere.
+     */
     function deleteAndGo() {
       store.remove('jwt');
       delete $rootScope.currentUser;
-      if (service.currentState.data.requiresLogin) {
-        if (_.first(service.currentState.name.split(".")) == "project") {
-          $state.go("project.detail", service.currentParams);
-        }
-      }
-      else {
-        $state.go(service.currentState.name, service.currentParams);
-      }
+      $state.go(service.currentState.name, service.currentParams);
     }
   };
-  
-}());

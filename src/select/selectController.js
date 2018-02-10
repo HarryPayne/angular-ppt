@@ -56,8 +56,12 @@
      */
     function checkForDirtyAddProjectForm(event, toState, toParams, fromState, fromParams) {
       projectDataService.success = "";
-      if (fromState.name == "state.addProject" && $scope.addProject.$dirty) {
-        event.preventDefault();
+
+      if (fromState.name == "select.addProject" &&
+          typeof $scope.selectForm != "undefined" &&
+          $scope.selectForm.$dirty) {
+
+    	event.preventDefault();
 
         var modalOptions = {
             closeText: "Cancel",

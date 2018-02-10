@@ -38,7 +38,7 @@ function selectConfig($stateProvider) {
         ],
         pristineProject: ["projectDataService",
           function(projectDataService) {
-            return projectDataService.getNewPristineModel();
+            return projectDataService.updatePristineProject();
           }
         ]
       }
@@ -52,6 +52,14 @@ function selectConfig($stateProvider) {
       templateUrl: "/app/src/select/templates/addProject.html",
       data: {
         requiresLogin: true
+      },
+      resolve: {
+        pristineProject: ["projectDataService",
+          function(projectDataService) {
+            return projectDataService.getNewPristineModel();
+          }
+        ]
       }
+
     });
 };
