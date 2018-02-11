@@ -11,7 +11,7 @@
     .module("app.login")
     .service("loginService", loginService);
   
-  loginService.$inject = ["$uibModal", "$rootScope", "store", "jwtHelper"];
+  loginService.$inject = ["$rootScope", "store", "jwtHelper"];
   
   function loginService($uibModal, $rootScope, store, jwtHelper) {
 
