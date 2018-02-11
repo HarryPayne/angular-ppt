@@ -12,7 +12,15 @@
   /-->
 
 <h4>Project Management Attributes</h4>
-<formly-form model="project.ds.projectModel" fields="project.ds.getFormlyFields('project')" >
-      <button type="button" ng-click="ctrl.save(ctrl.table)"> Save </button>
-      <button type="button" ng-click="ctrl.cancel()" ng-show="ctrl.hasCancel()"> Cancel </button>
-</formly-form>
+
+<form name="projectForm" form="project.ds.projectFormlyForm" class="form-horizontal" novalidate>
+    <formly-form model="project.ds.projectModel" 
+      fields="project.as.formlyFields['project']" 
+      form="project.ds.projectFormlyForm"
+      options="project.ds.projectFormlyOptions">
+      <div class="col-sm-offset-2 col-sm-10">
+          <button type="button" ng-click="project.ds.saveProject('project')"> Save </button>
+          <button type="button" ng-click="project.cancel()" ng-show="project.hasCancel()"> Cancel </button>
+      </div>
+    </formly-form>
+</form>

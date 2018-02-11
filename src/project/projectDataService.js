@@ -555,23 +555,28 @@
 	      var json_value = json[key];
 	      var match;
 	      
-	      // Check for daterange strings, which contain two date strings joined by "/"
-	      if (typeof json_value === "string" && json_value.split("/").length == 2) {
+	      /* Check for daterange strings, which are sent from the back end as a
+	       * list of date strings */ 
+	      if (Boolean(json_value) && typeof json_value === "string" &&
+	    	  json_value.match(/^\[(\d{4}-\d{2}-\d{2})([,\/\s]*)(\d{4}-\d{2}-\d{2})*\]$/)) {
 	        /* Split on "/", send both to jsonToModel, and check that what we get
 	         * back is a list of moment objects and/or empty strings. */
-	        var values = json_value.split("/");
+	        var values = json_value.match(/^\[(\d{4}-\d{2}-\d{2})([,\/\s]*)(\d{4}-\d{2}-\d{2})*\]$/);
 	        _.map(values, function(val) {
-	            if (val == "") {return null;}
+	            if (typeof val == "undefined") {return null;}
 	            else {return val;}
 	        });
-	        if (values[0] == "") values[0] = null;
-	        if (values[1] == "") values[1] = null;
-	        var range_model = jsonToModel(values);
-	
-	        if ((range_model[0].hasOwnProperty("_isAMomentObject") || values[0] == null) &&
-	            (range_model[1].hasOwnProperty("_isAMomentObject") || values[1] == null)) {
-	
-	           model[key] = moment.range(range_model[0], range_model[1]);
+	        try {
+				var range_model = moment.range(moment.utc(values[1]), moment.utc(values[3]));
+
+				if (range_model.start.hasOwnProperty("_isAMomentObject") &&
+					range_model.end.hasOwnProperty("_isAMomentObject")) {
+
+				   model[key] = range_model;
+				}
+	        }
+	        catch (e) {
+	        	// do nothing
 	        }
 	      } 
 	      // Check for string value that looks like a single date.

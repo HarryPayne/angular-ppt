@@ -14,11 +14,13 @@
 <h4>Description Attributes</h4>
 
 <form name="projectForm" form="project.ds.projectFormlyForm" class="form-horizontal" novalidate>
-    <formly-form model="project.ds.projectModel" 
-      fields="project.as.formlyFields['description']" 
+    <formly-form model="project.projectModel" 
+      fields="project.formlyFields['description']" 
       form="project.ds.projectFormlyForm"
       options="project.ds.projectFormlyOptions">
+      <div class="col-sm-offset-2 col-sm-10">
           <button type="button" ng-click="project.ds.saveProject('description')"> Save </button>
           <button type="button" ng-click="project.cancel()" ng-show="project.hasCancel()"> Cancel </button>
+      </div>
     </formly-form>
 </form>

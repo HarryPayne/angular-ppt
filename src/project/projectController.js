@@ -21,25 +21,26 @@ function Project($rootScope, $scope, $state, projectDataService,
 		         formlyFields, masterList, projectDataPromise){
   
   var vm = this;
-  vm.as = attributesService;
-  vm.ds = projectDataService;
-  vm.ls = projectListService;
-  vm.log_s = loginStateService;
-  vm.masterList = masterList;
-  vm.fields = formlyFields;
-  vm.projectModel = projectDataPromise;
+  this.as = attributesService;
+  this.ds = projectDataService;
+  this.ls = projectListService;
+  this.log_s = loginStateService;
+  this.masterList = masterList;
+  this.formlyFields = formlyFields;
+  this.projectModel = projectDataPromise;
 
-  vm.changeMode = vm.ds.changeMode;
-  vm.currentMode = projectDataService.currentMode;
-  vm.dateOptions = {changeYear: true, changeMonth: true};
-  vm.error = vm.ds.server;
-  vm.formlyOptions = vm.as.formlyOptions;
-  vm.getFormlyOptions = vm.as.getFormlyOptions;
-  vm.jumpToAtachFile = projectDataService.jumpToAtachFile;
-  vm.jumpToAddForm = projectDataService.jumpToAddForm;
-  //vm.masterList = vm.ls.getMasterList;
-  vm.showDetails = vm.ds.showDetails;
-  vm.success = vm.ds.success;
+  this.changeMode = this.ds.changeMode;
+  this.currentMode = projectDataService.currentMode;
+  this.dateOptions = {changeYear: true, changeMonth: true};
+  this.error = this.ds.server;
+  this.formlyOptions = this.as.formlyOptions;
+  this.getFormlyOptions = this.as.getFormlyOptions;
+  this.jumpToAtachFile = projectDataService.jumpToAtachFile;
+  this.jumpToAddForm = projectDataService.jumpToAddForm;
+  //this.masterList = this.ls.getMasterList;
+  this.showDetails = this.ds.showDetails;
+  this.success = this.ds.success;
 
-  $scope.$on(["$stateChangeStart"], vm.ds.unsavedDataPopup);
+  $scope.$on(["$stateChangeStart"], this.ds.unsavedDataPopup);
   
+};

@@ -3,7 +3,9 @@
   angular
     .module("app.modalConfirm", [
       "ngAnimate",
-      "ui.bootstrap"
+      "ui.router",
+      "ui.bootstrap",
+      "ui.router.modal"
     ]);
     
 }());

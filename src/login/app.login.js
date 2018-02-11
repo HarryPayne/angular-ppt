@@ -11,6 +11,7 @@
     .module("app.login", [
       "ngAnimate",
       "ui.bootstrap",
+      "ui.router.modal",
       "angular-storage",
       "angular-jwt"
     ]);
