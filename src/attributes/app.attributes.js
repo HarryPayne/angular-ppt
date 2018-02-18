@@ -4,7 +4,8 @@
     .module("app.attributes", [
     	"ui.router", 
     	"formly", 
-    	"formlyBootstrap", 
-    	"ui.bootstrap"]);
+    	"formlyBootstrap",
+    	"ui.bootstrap",
+    	"daterangepicker"]);
 
 }());

@@ -16,6 +16,8 @@ module.exports = function(grunt){
 		              "node_modules/angular-ui-date/dist/date.js",
 		              "node_modules/@uirouter/angularjs/release/angular-ui-router.min.js",
 		              "node_modules/bootstrap/dist/js/bootstrap.min.js",
+		              "node_modules/bootstrap-daterangepicker/daterangepicker.js",
+		              "node_modules/angular-daterangepicker/js/angular-daterangepicker.min.js",
 		              "node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js",
 		              "node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js",
 		              "node_modules/angular-ui-router-uib-modal/angular-ui-router-uib-modal.js",
@@ -55,6 +57,7 @@ module.exports = function(grunt){
 		        src: [
 		        	  "node_modules/angular-ui-router-uib-modal/sample/css/styles.css",
 		              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+		              "node_modules/bootstrap-daterangepicker/daterangepicker.css",
 		              "node_modules/angular-ui-bootstrap/dist/ui-bootstrap-csp.css",
 		              "node_modules/datatables/media/css/jquery.dataTables.min.css",
 		              "node_modules/angular-datatables/dist/plugins/bootstrap/datatables.bootstrap.min.css",
