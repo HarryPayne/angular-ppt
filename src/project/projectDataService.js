@@ -547,41 +547,53 @@
 	  function jsonToModel(json) {
 	    // No processing for things that are not objects.
 	    if (typeof json !== "object") return json;
+
+	    var iso8601 = new RegExp("^\([\\+-]?\\d{4}\(?!\\d{2}\\b\)\)\(\(-?\)\(\(0[1-9]|1[0-2]\)\(\\3\([12]\\d|0[1-9]|3[01]\)\)?|W\([0-4]\\d|5[0-2]\)\(-?[1-7]\)?|\(00[1-9]|0[1-9]\\d|[12]\\d{2}|3\([0-5]\\d|6[1-6]\)\)\)\([T\\s]\(\(\([01]\\d|2[0-3]\)\(\(:?\)[0-5]\\d\)?|24\\:?00\)\([\\.,]\\d+\(?!:\)\)?\)?\(\\17[0-5]\\d\([\.,]\\d+\)?\)?\([zZ]|\([\\+-]\)\([01]\\d|2[0-3]\):?\([0-5]\\d\)?\)?\)?\)?$");
 	
 	    var model = new Object;
 	    _.each(Object.keys(json), function(key) {
+	      
 	      if (!json.hasOwnProperty(key)) return;
 	
 	      var json_value = json[key];
 	      var match;
 	      
-	      /* Check for daterange strings, which are sent from the back end as a
-	       * list of date strings */ 
-	      if (Boolean(json_value) && typeof json_value === "string" &&
-	    	  json_value.match(/^\[(\d{4}-\d{2}-\d{2})([,\/\s]*)(\d{4}-\d{2}-\d{2})*\]$/)) {
-	        /* Split on "/", send both to jsonToModel, and check that what we get
-	         * back is a list of moment objects and/or empty strings. */
-	        var values = json_value.match(/^\[(\d{4}-\d{2}-\d{2})([,\/\s]*)(\d{4}-\d{2}-\d{2})*\]$/);
-	        _.map(values, function(val) {
-	            if (typeof val == "undefined") {return null;}
-	            else {return val;}
-	        });
-	        try {
-				var range_model = moment.range(moment.utc(values[1]), moment.utc(values[3]));
+          // Check for daterange strings, which contain two date strings joined by "/"
+          if (typeof json_value === "string" && json_value.split("/").length == 2) {
+            /* Split on "/", send both to jsonToModel, and check that what we get
+             * back is a list of moment objects and/or empty strings. */
+            var values = json_value.split("/");
+            _.map(values, function(val) {
+              if (val == "") {return null;}
+              else {return val;}
+            });
+            if (values[0] == "") values[0] = null;
+            if (values[1] == "") values[1] = null;
+            var range_model = jsonToModel(values);
 
-				if (range_model.start.hasOwnProperty("_isAMomentObject") &&
-					range_model.end.hasOwnProperty("_isAMomentObject")) {
+            if ((range_model[0].hasOwnProperty("_isAMomentObject") || values[0] == null) &&
+                (range_model[1].hasOwnProperty("_isAMomentObject") || values[1] == null)) {
 
-				   model[key] = range_model;
-				}
-	        }
-	        catch (e) {
-	        	// do nothing
-	        }
-	      } 
+              var range = moment.range(range_model[0], range_model[1]);
+              // Attributes for daterangepicker field
+              range.startDate = range.start
+              range.endDate = range.end
+              range.FY = range.start.year();
+              if (range.duration("quarters") == 4) {
+               	range.Q = 0;
+              }
+              else {
+                range.Q = range.start.quarter()
+              }
+
+              model[key] = range
+            }
+          }
 	      // Check for string value that looks like a single date.
-	      else if (typeof json_value === "string" && (match = json_value.match(/^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/))) {
-	        model[key] = moment.utc(match[0]);
+	      else if (typeof json_value === "string" &&
+	              (match = json_value.match(iso8601))) {
+	        // Data from back end is UTC. Instantiating this way converts to local time.
+	        model[key] = moment(match[0]);
 	      } 
 	      
 	      else if (json_value !== null && typeof json_value === "object") {
