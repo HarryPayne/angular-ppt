@@ -1,6 +1,9 @@
 (function() {
   
-  angular
-    .module("app.comment", ["ui.router"]);
+	angular
+		.module("app.comment", ["" +
+			"ui.router",
+			"ui.router.state.events",
+		]);
   
 }());

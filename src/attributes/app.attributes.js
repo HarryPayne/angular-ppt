@@ -1,11 +1,13 @@
 (function() {
 
-  angular
-    .module("app.attributes", [
-    	"ui.router", 
-    	"formly", 
-    	"formlyBootstrap",
-    	"ui.bootstrap",
-    	"daterangepicker"]);
+	angular
+		.module("app.attributes", [
+			"ui.router", 
+			"formly", 
+			"formlyBootstrap",
+			"ui.bootstrap",
+			"ui.router",
+			"ui.router.state.events",
+			"daterangepicker"]);
 
 }());

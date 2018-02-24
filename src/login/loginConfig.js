@@ -1,22 +1,22 @@
 (function() {
   
-  "use strict";
-  
-  angular
-    .module("app.login")
-    .config(loginConfig);
-  
-  loginConfig.$inject = ["jwtInterceptorProvider", "$httpProvider"];
-  
-  function loginConfig(jwtInterceptorProvider, $httpProvider) {
+	"use strict";
 
-    jwtInterceptorProvider.tokenGetter = function(store) {
-      return store.get('jwt');
-    };
+	angular
+		.module("app.login")
+		.config(loginConfig);
 
-    $httpProvider.interceptors.push('jwtInterceptor');
+	loginConfig.$inject = ["jwtInterceptorProvider", "$httpProvider"];
 
-    $httpProvider.interceptors.push('loginInjector');
-  }
+	function loginConfig(jwtInterceptorProvider, $httpProvider) {
+
+		jwtInterceptorProvider.tokenGetter = function(store) {
+			return store.get('jwt');
+		};
+
+		$httpProvider.interceptors.push('jwtInterceptor');
+
+		$httpProvider.interceptors.push('loginInjector');
+	}
     
 }());

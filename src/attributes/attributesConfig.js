@@ -80,7 +80,7 @@ function attributesConfig(formlyConfigProvider) {
       overwriteOk: true
     });
   formlyConfigProvider.setType({
-      name: "daterange",
+      name: "daterangepicker",
       templateUrl: "displayDaterange-template.html",
       wrapper: ['bootstrapLabel', 'bootstrapHasError'],
       overwriteOk: true

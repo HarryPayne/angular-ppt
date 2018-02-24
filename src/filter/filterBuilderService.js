@@ -12,11 +12,9 @@
     .module("app.filter")
     .factory("FilterBuilderService", FilterBuilderService);
   
-  FilterBuilderService.$inject = ["projectListService", "reportTableService",
-                                  "stateLocationService"];
+  FilterBuilderService.$inject = ["projectListService", "reportTableService"];
   
-  function FilterBuilderService(projectListService, reportTableService, 
-                                stateLocationService) {
+  function FilterBuilderService(projectListService, reportTableService) {
 
     /** service to be returned by this factory */
     var service = {

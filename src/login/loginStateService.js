@@ -74,23 +74,23 @@
      *  @desc Instantiate a service that opens a login modal popup.
      */
     function login() {
-      var currentState = $state.current;
-      var currentParams = $state.params;
-      loginService()
+      service.currentState = $state.current;
+      service.currentParams = $state.params;
+      loginService.getUserViaModal()
         .then(
-          function () {
-            $state.go(currentState, currentParams);
+          function (user) {
+            $state.go(service.currentState, service.currentParams);
           },
-          function () {
+          function (user) {
             if (_.first(service.currentState.name.split(".")) == "project") {
-              $state.go("project.detail", service.currentParams);
+              $state.go("project.detail", currentParams);
             }
-            else if (currentState && currentState.data.loginRequired) {
+            else if (service.currentState && service.currentState.data.loginRequired) {
               $state.go("select.home");
             }
-            else if (currentState) {
-              $state.go(currentState, currentParams)
-            }
+//             else if (currentState) {
+//               $state.go(currentState, currentParams)
+//             }
           }
         );
     }

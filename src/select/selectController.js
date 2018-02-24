@@ -28,23 +28,24 @@
                   pristineProject, projectDataService, projectListService, 
                   selectStateService) {
     
-    this.state = $state;
+    var vm = this;
+    vm.state = $state;
     
-    this.as = attributesService;
-    this.ds = projectDataService;
-    this.logss = loginStateService;
+    vm.as = attributesService;
+    vm.ds = projectDataService;
+    vm.logss = loginStateService;
 
-	this.formlyFields = formlyFields;
-	this.masterList = masterList;
-    this.pristineProject = pristineProject;
-	this.briefDescriptions = masterList;
+	vm.formlyFields = formlyFields;
+	vm.masterList = masterList;
+    vm.pristineProject = pristineProject;
+	vm.briefDescriptions = masterList;
 	
-    this.ls = projectListService;
-    //this.masterList = this.ls.getMasterList;
-    this.jumpToProject = this.ls.jumpToProject;
+    vm.ls = projectListService;
+    //vm.masterList = vm.ls.getMasterList;
+    vm.jumpToProject = vm.ls.jumpToProject;
     
-    this.ss = selectStateService;
-    this.selectState = selectStateService.getMasterList;
+    vm.ss = selectStateService;
+    vm.selectState = selectStateService.getMasterList;
     
     $scope.$on("$stateChangeStart", checkForDirtyAddProjectForm);
 

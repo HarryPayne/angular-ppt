@@ -16,46 +16,36 @@
     .controller("Login", Login);
   
   Login.$inject = ["$q", "$state", "$http", "$scope", "$uibModalInstance", 
-                   "loginApiService"];
+                   "loginApiService", "loginService"];
   
-  function Login($q, $state, $http, $scope, $uibModalInstance, loginApiService) {
+  function Login($q, $state, $http, $scope, $uibModalInstance, loginApiService, loginService) {
     var vm = this;
-    var request = {
-      method: "POST",
-      url: "/getLoginToken",
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8",
-        "X-CSRFToken": window.csrf_token
-      }
-    }
-    $http(request)
-      .then(function(response) {
-        vm.login_token = response.data.csrf_token;
-      });
+    vm.ls = loginService;
+    vm.ls.getLoginToken();
 
-    this.cancel = cancelLogin;
-    this.submit = submitLogin;
-    this.status = "";
-  
-    function submitLogin(username, password) {
-      vm.login_error = 0;
-      loginApiService.login(vm.login_token, username, password)
-        .then(
-          function (user) {
-            $uibModalInstance.close(user);
-          },
-          function ($scope) {
-            if ($scope.status == 401) {
-              vm.login_error = 401;
-            };
-          }
-        );
-    }
+    vm.cancel = cancelLogin;
+    vm.submit = submitLogin;
+    vm.status = "";
 
     function cancelLogin() {
       $scope.$dismiss();
     }
     
+    function submitLogin(username, password) {
+      vm.login_error = 0;
+      loginApiService.login(vm.ls.login_token, username, password)
+        .then(
+          function (response) {
+            if (response.status == 401) {
+              vm.login_error = 401;
+            }
+            else {
+              vm.ls.assignCurrentUser(response);
+              $uibModalInstance.close();
+            }
+          }
+        );
+    }
   };
   
 }());

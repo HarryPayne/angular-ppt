@@ -6,6 +6,9 @@
    *        not for the <head>). 
    */
   angular
-    .module("app.header", ["ui.router"]);
+    .module("app.header", [
+    		"ui.router",
+			"ui.router.state.events",
+	]);
   
 }());

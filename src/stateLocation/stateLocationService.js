@@ -123,7 +123,7 @@
         }
         else {
           state.name = "filter.builder";
-          state.params.query_string = path[0];
+          state.params.query_string = path[0] ? path[0] : "";
         }
       }
       else if (base == "report") {

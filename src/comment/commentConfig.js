@@ -1,24 +1,31 @@
 (function() {
   
-  "use strict";
-  
-  angular
-    .module("app.comment")
-    .config(commentConfig);
-  
-  commentConfig.$inject = ["$stateProvider"];
+	/**
+	 * 	@name app.comment
+	 * 	@desc A module to support the Comment tab functionality, which is
+	 * 			concerned with the management and display of comments made on
+	 * 			projects.
+	 */
+	
+	"use strict";
 
-  function commentConfig($stateProvider) {
-    $stateProvider
-      .state("comment", {
-        url: "/comment",
-        templateUrl: "/app/src/comment/comment.html",
-        controller: "Comment",
-        controllerAs: "comment",
-        data: {
-          requiresLogin: true
-        }
-      });
-  }
+	angular
+		.module("app.comment")
+		.config(commentConfig);
+
+	commentConfig.$inject = ["$stateProvider"];
+
+	function commentConfig($stateProvider) {
+		$stateProvider
+		.state("comment", {
+			url: "/comment",
+			templateUrl: "/app/src/comment/comment.html",
+			controller: "Comment",
+			controllerAs: "comment",
+			data: {
+				requiresLogin: true
+			}
+		});
+	}
   
 }());

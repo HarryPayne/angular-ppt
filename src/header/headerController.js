@@ -7,30 +7,30 @@
     .controller("Header", Header);
   
   Header.$inject = ["$rootScope", "$state", "projectListService", 
-                    "loginApiService", "loginStateService"];
+                    "loginApiService", "loginStateService", "loginService"];
   
   function Header($rootScope, $state, projectListService, loginApiService,
-                  loginStateService) {
+                  loginStateService, loginService) {
     var vm = this;
-    this.csrf_token = $rootScope.csrf_token;
+    vm.csrf_token = $rootScope.csrf_token;
     
-    this.currentUser = $rootScope.currentUser;
-    this.masterList = projectListService.getMasterList;
-    this.getSql = projectListService.getSql;
-    this.getNextID = projectListService.getNextID;
-    this.getPreviousID = projectListService.getPreviousID;
-    this.getProjectID = projectListService.getProjectID;
-    this.hasNextID = projectListService.hasNextID;
-    this.hasPreviousID = projectListService.hasPreviousID;
+    vm.currentUser = $rootScope.currentUser;
+    vm.masterList = projectListService.getMasterList;
+    vm.getSql = projectListService.getSql;
+    vm.getNextID = projectListService.getNextID;
+    vm.getPreviousID = projectListService.getPreviousID;
+    vm.getProjectID = projectListService.getProjectID;
+    vm.hasNextID = projectListService.hasNextID;
+    vm.hasPreviousID = projectListService.hasPreviousID;
 
-    this.loggedIn = loginStateService.loggedIn;
-    this.login = loginStateService.login;
-    this.logout = loginApiService.logout;
+    vm.loggedIn = loginStateService.loggedIn; 
+    vm.login = loginService.getUserViaModal;
+    vm.logout = loginApiService.logout;
 
-    this.jumpToNextProject = jumpToNextProject;
-    this.jumpToPreviousProject = jumpToPreviousProject;
+    //vm.jumpToNextProject = jumpToNextProject;
+    //vm.jumpToPreviousProject = jumpToPreviousProject;
 
-    this.setCsrfToken = function(token) {
+    vm.setCsrfToken = function(token) {
       $rootScope.csrf_token = token;
     }
     

@@ -1,15 +1,18 @@
 (function() {
 
-  /**
-   *  @module app.report
-   *  @desc   a module for the Report tab of the application
-   */  
+	/**
+	 *  @module app.report
+	 *  @desc   A module for the Report tab of the application. This tab
+	 *  		allows users to filter the list of projects by searching
+	 *  		by attribute values, text field searches, and date ranges.
+	 */  
 
-  angular
-    .module("app.report", [
-        "ui.router",            /** angular-ui-router */
-        "datatables",           /** angular-datatables, depends on jQuery DataTables */
-        "datatables.bootstrap"  /** angular-datatables Bootstrap module */
-      ]);
+	angular
+		.module("app.report", [
+			"ui.router",
+			"ui.router.state.events",
+			"datatables",
+			"datatables.bootstrap"
+			]);
   
 }());
