@@ -8,7 +8,6 @@
   angular
     .module("app.header", [
     		"ui.router",
-			"ui.router.state.events",
 	]);
   
 }());

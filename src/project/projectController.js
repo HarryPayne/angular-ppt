@@ -1,46 +1,55 @@
-/**
- *  @name Project
- *  @desc A controller for the states and views associated with the Project 
- *        tab. 
- */
+(function() {
 
-"use strict";
+	/**
+	 *  @name Project
+	 *  @desc A controller for the states and views associated with the Project 
+	 *        tab. 
+	 */
 
-angular
-  .module("app.project")
-  .controller("Project", Project);
+	"use strict";
 
-Project.$inject = ["$rootScope", "$scope", "$state", "projectDataService",
-				   "projectListService", "attributesService",
-				   "modalConfirmService", "loginStateService", "formlyFields",
-				   "masterList", "projectDataPromise"];
+	angular
+		.module("app.project")
+		.controller("Project", Project);
 
-function Project($rootScope, $scope, $state, projectDataService,
-		         projectListService, attributesService,
-		         modalConfirmService, loginStateService,
-		         formlyFields, masterList, projectDataPromise){
-  
-  var vm = this;
-  this.as = attributesService;
-  this.ds = projectDataService;
-  this.ls = projectListService;
-  this.log_s = loginStateService;
-  this.masterList = masterList;
-  this.formlyFields = formlyFields;
-  this.projectModel = projectDataPromise;
+	Project.$inject = ["$transitions", "projectDataService",
+		"projectListService", "attributesService",
+		"modalConfirmService", "loginStateService", "formlyFields",
+		"masterList", "projectDataPromise"];
 
-  this.changeMode = this.ds.changeMode;
-  this.currentMode = projectDataService.currentMode;
-  this.dateOptions = {changeYear: true, changeMonth: true};
-  this.error = this.ds.server;
-  this.formlyOptions = this.as.formlyOptions;
-  this.getFormlyOptions = this.as.getFormlyOptions;
-  this.jumpToAtachFile = projectDataService.jumpToAtachFile;
-  this.jumpToAddForm = projectDataService.jumpToAddForm;
-  //this.masterList = this.ls.getMasterList;
-  this.showDetails = this.ds.showDetails;
-  this.success = this.ds.success;
+	function Project($transitions, projectDataService,
+			projectListService, attributesService,
+			modalConfirmService, loginStateService,
+			formlyFields, masterList, projectDataPromise){
 
-  $scope.$on(["$stateChangeStart"], this.ds.unsavedDataPopup);
-  
-};
+		var vm = this;
+		vm.as = attributesService;
+		vm.ds = projectDataService;
+		vm.ls = projectListService;
+		vm.log_s = loginStateService;
+		vm.masterList = masterList;
+
+		var form = new Object;
+		form.formlyFields = formlyFields;
+		form.projectModel = projectDataPromise;
+		form.projectFormlyOptions = vm.ds.projectFormlyOptions;
+		vm.form = form;
+
+		vm.changeMode = vm.ds.changeMode;
+		vm.currentMode = projectDataService.currentMode;
+		vm.dateOptions = {changeYear: true, changeMonth: true};
+		vm.error = vm.ds.server;
+		vm.formlyOptions = vm.as.formlyOptions;
+		vm.getFormlyOptions = vm.as.getFormlyOptions;
+		vm.jumpToAtachFile = projectDataService.jumpToAtachFile;
+		vm.jumpToAddForm = projectDataService.jumpToAddForm;
+		//vm.masterList = vm.ls.getMasterList;
+		vm.showDetails = vm.ds.showDetails;
+		vm.success = vm.ds.success;
+
+		$transitions.onBefore({from: 'project.**'}, function(transition) {
+			var confirmPromise = vm.ds.unsavedDataPopup(transition, vm.form)}
+		);
+
+	};
+}());

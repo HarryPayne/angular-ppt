@@ -10,7 +10,6 @@
 	angular
 		.module("app.report", [
 			"ui.router",
-			"ui.router.state.events",
 			"datatables",
 			"datatables.bootstrap"
 			]);

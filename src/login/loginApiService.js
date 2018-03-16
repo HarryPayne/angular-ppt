@@ -24,6 +24,18 @@
     };
 
     return service;    
+
+    /**
+     * 	@name deleteAndGo
+     *  @desc Remove the currentUser object and the JWT. Transition to the
+     *  	  current state. If the current state requires login, then the
+     *  	  user will be redirected to a safe landing elsewhere.
+     */
+    function deleteAndGo() {
+      store.remove('jwt');
+      delete $rootScope.currentUser;
+      $state.go(service.currentState.name, service.currentParams);
+    }
   
     /**
      *  @name login
@@ -75,17 +87,5 @@
           }
         }
       return $http(request)
-    }
-
-    /**
-     * 	@name deleteAndGo
-     *  @desc Remove the currentUser object and the JWT. Transition to the
-     *  	  current state. If the current state requires login, then the
-     *  	  user will be redirected to a safe landing elsewhere.
-     */
-    function deleteAndGo() {
-      store.remove('jwt');
-      delete $rootScope.currentUser;
-      $state.go(service.currentState.name, service.currentParams);
     }
   };

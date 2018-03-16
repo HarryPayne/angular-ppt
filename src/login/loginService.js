@@ -22,6 +22,28 @@
 		}
 		
 		return service;
+
+		/**
+		 * 	@name assignCurrentUser
+		 *  @desc If the modal interaction returns a successful (status = 200)
+		 *  	  request for a JWT from the back end, then save it, decode it
+		 *  	  for a user identity and put it in $rootScope.currentUser.
+		 *  @returns {Object} user object on success, original result for
+		 *  				  more processing on error (failed authentication).
+		 */
+		function assignCurrentUser(result) {
+			if (result && result.status == 200) {
+				store.set("jwt", result.data.access_token);
+				var user = jwtHelper
+								.decodeToken(result.data.access_token)
+								.identity;
+				if (typeof user != "undefined") {
+					$rootScope.currentUser = user;
+					return user;
+				}
+			}
+			return result;
+		};
     
 	    /**
 		 * 	@name getLoginToken()
@@ -60,28 +82,6 @@
 			});
 
 			return instance.result
-		};
-
-		/**
-		 * 	@name assignCurrentUser
-		 *  @desc If the modal interaction returns a successful (status = 200)
-		 *  	  request for a JWT from the back end, then save it, decode it
-		 *  	  for a user identity and put it in $rootScope.currentUser.
-		 *  @returns {Object} user object on success, original result for
-		 *  				  more processing on error (failed authentication).
-		 */
-		function assignCurrentUser(result) {
-			if (result && result.status == 200) {
-				store.set("jwt", result.data.access_token);
-				var user = jwtHelper
-								.decodeToken(result.data.access_token)
-								.identity;
-				if (typeof user != "undefined") {
-					$rootScope.currentUser = user;
-					return user;
-				}
-			}
-			return result;
 		};
 	};
   

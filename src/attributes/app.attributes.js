@@ -7,7 +7,6 @@
 			"formlyBootstrap",
 			"ui.bootstrap",
 			"ui.router",
-			"ui.router.state.events",
 			"daterangepicker"]);
 
 }());

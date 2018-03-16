@@ -76,7 +76,7 @@
     function login() {
       service.currentState = $state.current;
       service.currentParams = $state.params;
-      loginService.getUserViaModal()
+      var instance = loginService.getUserViaModal()
         .then(
           function (user) {
             $state.go(service.currentState, service.currentParams);

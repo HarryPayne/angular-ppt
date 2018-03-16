@@ -10,8 +10,8 @@
   
   function manageConfig($stateProvider) {
     $stateProvider
-      .state("manage", {
-        url: "/manage",
+      .state("app.manage", {
+        url: "manage",
         templateUrl: "/app/src/manage/manage.html",
         controller: "Manage",
         controllerAs: "manage",

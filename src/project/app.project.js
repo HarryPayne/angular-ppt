@@ -8,7 +8,6 @@
 		.module("app.project", [
 			"ui.date", 
 			"ui.router",
-			"ui.router.state.events",
 			"ngSanitize",
 			"angularMoment"
 			]);

@@ -8,8 +8,7 @@
 	 */
 	angular
 		.module("app.manage", [
-			"ui.router",
-			"ui.router.state.events",
+			"ui.router"
 		]);
   
 }());

@@ -10,8 +10,7 @@
 			"ngAnimate",
 			"ui.router",
 			"ui.bootstrap",
-			"ui.router.modal",
-			"ui.router.state.events",
-			]);
+			"ui.router.modal"
+		]);
     
 }());

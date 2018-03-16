@@ -3,8 +3,8 @@
   <body >
     <div ng-controller="Project as project">
       <span style="float:right;margin-top: -26px;margin-right: 15px">
-        <span ng-show="project.ds.currentMode() == 'view' && (currentUser.roles.indexOf('Curator') > -1 || currentUser.roles.indexOf('Manager') > -1)"><a ui-sref="project.edit" ng-click="project.changeMode();">Edit this project</a></span>
-        <span ng-show="project.ds.currentMode() == 'edit' && (currentUser.roles.indexOf('Curator') > -1 || currentUser.roles.indexOf('Manager') > -1)"><a ui-sref="project.detail" ng-click="project.changeMode();">View this project</a></span>
+        <span ng-show="project.ds.currentMode() == 'view' && (currentUser.roles.indexOf('Curator') > -1 || currentUser.roles.indexOf('Manager') > -1)"><a ui-sref="app.project.edit" ng-click="project.changeMode();">Edit this project</a></span>
+        <span ng-show="project.ds.currentMode() == 'edit' && (currentUser.roles.indexOf('Curator') > -1 || currentUser.roles.indexOf('Manager') > -1)"><a ui-sref="app.project.detail" ng-click="project.changeMode();">View this project</a></span>
         &nbsp;&nbsp;&nbsp;&nbsp;
         <span ng-show="currentUser.roles.length > 0">Add a Comment</span>
         &nbsp;&nbsp;&nbsp;&nbsp;

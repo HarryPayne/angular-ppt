@@ -40,7 +40,7 @@
 				vm.pageTitle = "PPT: Report";
 			}
 			else if (tab == "project") {
-				var projectID = trans.params().projectID;
+				var projectID = transition.params().projectID;
 				vm.pageTitle = projectID + ". " + vm.masterList().projectName;
 			}  
 			else if (tab == "comment") {
@@ -57,9 +57,7 @@
 			}      
 		}
 		
-		$transitions.onSuccess({}, function(trans){
-			updateTitle(trans);
-		});
+		$transitions.onSuccess({}, updateTitle);
 	}
 
 }());

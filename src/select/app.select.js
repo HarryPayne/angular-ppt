@@ -12,7 +12,6 @@
 	angular
     	.module("app.select", [
 	        "ui.router",
-			"ui.router.state.events",
 	        // 'readMore'
 	    ]);
   

@@ -1,7 +1,7 @@
     <div  class="container">
       <h3>{{ report.ts.title }}</h3>
       
-      Filter: {{ report.masterList().description }}<br/>
+      Filter: {{ report.ls.getDescription() }}<br/>
       {{report.masterList().selectedIds.length}} projects selected
 
       <div class="table-responsive">

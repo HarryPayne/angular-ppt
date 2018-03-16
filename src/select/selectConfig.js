@@ -15,10 +15,10 @@
 
 	function selectConfig($stateProvider) {
 		$stateProvider
-			.state("select", {
+			.state("app.select", {
 				/** "virtual" root of Select tab states, which does resolve promises for
 				 * all sub-states. */
-				url: "/select",
+				url: "select",
 				controller: "Select",
 				controllerAs: "select",
 				templateUrl: "/app/src/select/select.html",
@@ -35,7 +35,7 @@
 					],
 					masterList: ["projectListService",
 						function(projectListService) {
-						return projectListService.getMasterList();
+						return projectListService.updateAllProjects();
 					}
 					],
 					pristineProject: ["projectDataService",
@@ -45,11 +45,11 @@
 					]
 				}
 			})
-			.state("select.home", {
+			.state("app.select.home", {
 				url: "/home",
 				templateUrl: "/app/src/select/templates/home.html"
 			})
-			.state("select.addProject", {
+			.state("app.select.addProject", {
 				url: "/addProject",
 				templateUrl: "/app/src/select/templates/addProject.html",
 				data: {

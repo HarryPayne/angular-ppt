@@ -15,8 +15,6 @@
 		};
 
 		$httpProvider.interceptors.push('jwtInterceptor');
-
-		$httpProvider.interceptors.push('loginInjector');
 	}
     
 }());

@@ -28,20 +28,25 @@
     vm.status = "";
 
     function cancelLogin() {
+      $uibModalInstance.close();
       $scope.$dismiss();
     }
     
     function submitLogin(username, password) {
       vm.login_error = 0;
-      loginApiService.login(vm.ls.login_token, username, password)
+      var response = loginApiService.login(vm.ls.login_token, username, password)
         .then(
+          function (response) {
+              vm.ls.assignCurrentUser(response);
+              $uibModalInstance.close();
+              return response;
+          },
           function (response) {
             if (response.status == 401) {
               vm.login_error = 401;
             }
             else {
-              vm.ls.assignCurrentUser(response);
-              $uibModalInstance.close();
+              vm.login_error = response.status;
             }
           }
         );

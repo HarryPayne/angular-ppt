@@ -13,14 +13,6 @@
 	 *          projectListService - for the data that support the Previous and
 	 *            Next top-level tabs, and also remember just which projects were
 	 *            selected by your last filter or breakdown by attribute.
-	 *          stateLocationService - a service from the app.stateLocation
-	 *            module. It handles the interaction between state changes and
-	 *            location changes, and allows the user change the state of the
-	 *            application by typing in the browser location bar. For example
-	 *            you can change which project you are working on by changing
-	 *            the projectID in the location bar, and you can change the
-	 *            project selection query for a report by changing the query
-	 *            string in the location bar.
 	 */
 
 	"use strict";
@@ -29,17 +21,15 @@
 	    .module("app.project")
 	    .factory("projectDataService", ProjectDataService);
 
-	ProjectDataService.$inject = ["$rootScope", "$http", "$state", "$stateParams",
-		"$q", "$location", "$timeout", "moment",
-		"attributesService", "loginStateService",
-		"modalConfirmService", "projectListService",
-		"stateLocationService"];
+	ProjectDataService.$inject = ["$rootScope", "$http",
+			"$q", "$state", "$uiRouterGlobals", "$timeout", "$transitions", "moment",
+			"attributesService", "loginStateService",
+			"modalConfirmService", "projectListService"];
 
-	function ProjectDataService($rootScope, $http, $state, $stateParams, $q,
-			$location, $timeout, moment, attributesService,
-			loginStateService, modalConfirmService, 
-			projectListService,
-			stateLocationService) {
+	function ProjectDataService($rootScope, $http,
+			$q, $state, $uiRouterGlobals, $timeout, $transitions, moment,
+			attributesService, loginStateService,
+			modalConfirmService, projectListService) {
 
 		/** service to be returned by this factory */
 		var service = {
@@ -62,11 +52,9 @@
 				getProjectData: getProjectData,
 				getProjectDataValues: getProjectDataValues,
 				getProjectAttributes: attributesService.getProjectAttributes,
-				getProjectDataFromLocation: getProjectDataFromLocation,
 				getSelectedDetail: getSelectedDetail,
 				hasProjectModel: hasProjectModel,
 				hideDetails: hideDetails,
-				initService: initService,
 				isSelected: isSelected,
 				jsonToModel: jsonToModel,
 				jumpToAddForm: jumpToAddForm,
@@ -81,7 +69,6 @@
 				setProjectData: setProjectData,
 				showDetails: showDetails,
 				showEditSuccess: showEditSuccess,
-				stateParams: $stateParams,
 				tableToJSON: tableToJSON,
 				unsavedDataPopup: unsavedDataPopup,
 				updatePristineProject: updatePristineProject,
@@ -91,19 +78,8 @@
 		//initService();
 
 		$rootScope.$on("savestate", service.SaveState);
-		$rootScope.$on("restorestate", service.RestoreState);
-		$rootScope.$on("$locationChangeSuccess", function() {
+//		$rootScope.$on("restorestate", service.RestoreState);
 
-			/** if we landed under the Project tab ... */
-			if (_.first($state.current.name.split(".")) == "project") {
-
-				service.RestoreState();
-				if (typeof service.projectID == "undefined" ||
-						parseInt($state.params.projectID) != service.projectID) {
-					service.initService();
-				}
-			}
-		});
 		$rootScope.$on("setProjectFormPristine", function() {
 			if (typeof service.projectFormlyForm != "undefined") {
 				service.projectFormlyForm.$setPristine(true);
@@ -288,7 +264,7 @@
 		 * @param {Int} projectID
 		 */
 		function getModelObject(projectID) {
-			if (!service.hasProjectModel()) {
+			if (!service.hasProjectModel(projectID) || projectID != service.projectID) {
 				service.projectModel = service.getProjectData(projectID);
 			}
 			return service.projectModel;
@@ -370,24 +346,6 @@
 		}
 
 		/**
-		 *  @name getProjectDataFromLocation
-		 *  @desc Generate an analogue for $state and $stateParams by looking at
-		 *        the location instead of state, and use those parameters for
-		 *        getting data for that project. This allows you to change the
-		 *        projectID in the location bar and have the application change
-		 *        state to match what you typed.
-		 */
-		function getProjectDataFromLocation() {
-			var state = stateLocationService.getStateFromLocation();
-			if ("projectID" in state.params &&
-					state.params.projectID != service.projectID) {
-				service.projectID = state.params.projectID;
-				service.getProjectData(state.params);
-				projectListService.setProjectID(service.projectID);
-			}
-		}
-
-		/**
 		 * @name getSelectedDetail
 		 * @desc Given the name of a project model attribute that corresponds
 		 *       to a list of objects, and an object with primary key attributes
@@ -432,8 +390,11 @@
 		 *  @name hasProjectModel
 		 *  @desc Has the project model been initialized?
 		 */
-		function hasProjectModel() {
+		function hasProjectModel(projectID) {
 			if (typeof service.projectModel == "undefined") {
+				return false;
+			}
+			if (projectID != service.projectID) {
 				return false;
 			}
 			return true;
@@ -461,40 +422,6 @@
 			else {
 				$state.go("project.detail", {projectID: $state.params.projectID});
 			}
-		}
-
-		/**
-		 *  @name initService
-		 *  @desc called onEnter from projectConfig.js to ensure that data for the
-		 *        report from the backend are already in hand (or promised).
-		 * @return {Object} promise - a promise that is resolved after project
-		 *        have been received and saved.
-		 */
-		function initService() {
-
-			var deferred = $q.defer();
-
-			/** project id from state params */
-			var state_projectID = parseInt($stateParams.projectID);
-
-			/** projectID saved in the project list service */
-			var saved_projectID = projectListService.getProjectID();
-
-			projectListService.setProjectID(state_projectID);
-			if (state_projectID && state_projectID > -1
-					&& saved_projectID != state_projectID){
-				/* then the data we want is not what we have, so ... */
-				service.getProjectDataValues($stateParams);
-			}
-			else if (saved_projectID && saved_projectID == state_projectID
-					&&  typeof service.projectModel == "undefined") {
-				/* we should be good to go but there are no saved data, so ... */
-				service.getProjectDataValues($stateParams);
-			}
-			else {
-				deferred.resolve();
-			}
-			return deferred.promise;
 		}
 
 		/**
@@ -689,11 +616,11 @@
 				 * Otherwise, save a state with cleared out messages. */
 				if ((_.last(service.restoredState.split(".")) == "editDetail" &&
 						service.restoredState.replace("editDetail", "edit") == 
-							stateLocationService.getStateFromLocation().name)
+							$state.params.name)
 							||
 							(_.last(service.restoredState.split(".")) == "add" &&
 									service.restoredState.replace("add", "edit") == 
-										stateLocationService.getStateFromLocation().name)) {
+										$state.params.name)) {
 					service.success = data.messages.success;
 					service.error = data.messages.error;
 				}
@@ -755,7 +682,8 @@
 					Object.keys(service.projectModel).length == 0) return;
 
 			var data = new Object;
-			data.savedState = stateLocationService.getStateFromLocation();
+//			data.savedState = $uiRouterGlobals.params;
+			data.savedState = {projectID: service.projectID};
 			data.csrf_token = service.csrf_token;
 			data.projectModel = service.projectModel; 
 			data.messages = {success: service.success, error: service.error}
@@ -780,8 +708,8 @@
 			// Make the project sent back be the current project:
 			projectListService.setProjectID(service.projectID);
 
-			/** mark the form as $pristine. Only the controller can do that so give
-	        it a ping. */
+			/** mark the form as $pristine. Only the controller can do that 
+			 * so give it a ping. */
 			$rootScope.$broadcast("setProjectFormPristine");
 		}
 
@@ -901,7 +829,7 @@
 		 *  @desc Open a popup and ask how to proceed in the case of attempting to 
 		 *        navigate away from one of the project edit sub-tabs when there 
 		 *        is unsaved data in the form. The  function is bound to the 
-		 *        $stateChangeStart event, and the calling sequence is that of a 
+		 *        $transition.onBefore event, and the calling sequence is that of a 
 		 *        handler for this event.
 		 *  @param {Object} event
 		 *  @param {Object} toState
@@ -909,20 +837,19 @@
 		 *  @param {Object} fromState
 		 *  @param {Object} fromParams
 		 */
-		function unsavedDataPopup(event, toState, toParams, fromState, 
-				fromParams) {
+		function unsavedDataPopup(transition, controller, fromParams) {
 			service.success = "";
 			if (typeof service.noCheck != "undefined") {
-				service.projectFormlyForm.$setPristine(true);
+				controller.projectFormlyForm.$setPristine(true);
 				delete service.noCheck;
 				//$state.go(toState, toParams);
 			}
 
 			/** if the "projectForm" project editing form has unsaved changes ... */
-			if (typeof service.projectFormlyForm != "undefined" &&
-					service.projectFormlyForm.$dirty) {
+			if (typeof controller.projectFormlyForm != "undefined" &&
+					controller.projectFormlyForm.$dirty) {
 
-				event.preventDefault();
+// 				event.preventDefault();
 
 				var modalOptions = {
 						closeText: "Cancel",
@@ -933,14 +860,27 @@
 							"press Cancel to stay on this page."].join("")
 				};
 
-				/** Open a modal window that asks the question shown above as bodyText,
-				 *  and shows Continue and Cancel buttons for making a response. The
-				 *  promised response is passed to a callback function.
+				/* Open a modal window that asks the question shown above as 
+				 * bodyText, and shows Continue and Cancel buttons for making 
+				 * a response. The promised response is passed to a callback 
+				 * function.
 				 */
-				modalConfirmService.showModal({}, modalOptions).then(function (response) {
-					service.projectFormlyOptions.resetModel();
-					$state.go(toState, toParams);
-				});
+				controller.confirm = modalConfirmService.showModal({}, modalOptions)
+					.then(
+						function (response) {
+							controller.projectFormlyOptions.resetModel();
+//							controller.projectFormlyForm.$setPristine();
+// 							service.confirm.resolve(true);
+							return true;
+	// 						$state.go(toState, toParams);
+						},
+						function (r) {
+							return false;
+// 							service.confirm.resolve(false);
+						}
+					);
+				
+// 				return controller.confirm;
 			}
 		}
 

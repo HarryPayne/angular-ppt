@@ -6,10 +6,10 @@
     .module("app.header")
     .controller("Header", Header);
   
-  Header.$inject = ["$rootScope", "$state", "projectListService", 
+  Header.$inject = ["$rootScope", "$state", "$transitions", "projectListService", 
                     "loginApiService", "loginStateService", "loginService"];
   
-  function Header($rootScope, $state, projectListService, loginApiService,
+  function Header($rootScope, $state, $transitions, projectListService, loginApiService,
                   loginStateService, loginService) {
     var vm = this;
     vm.csrf_token = $rootScope.csrf_token;
@@ -27,20 +27,20 @@
     vm.login = loginService.getUserViaModal;
     vm.logout = loginApiService.logout;
 
-    //vm.jumpToNextProject = jumpToNextProject;
-    //vm.jumpToPreviousProject = jumpToPreviousProject;
+    vm.jumpToNextProject = jumpToNextProject;
+    vm.jumpToPreviousProject = jumpToPreviousProject;
 
     vm.setCsrfToken = function(token) {
       $rootScope.csrf_token = token;
     }
     
-    $rootScope.$on("$stateChangeSuccess", function(e, toState){
+    $transitions.onSuccess({}, function(trans){
       vm.isActive = isActive;
       vm.hasNext = hasNext;
       vm.hasPrevious = hasPrevious;
 
       function isActive(name) {
-        return toState.name.split(".")[0] === name;
+        return trans.to().name.split(".")[1] === name;
       }; 
   
       function hasNext() {

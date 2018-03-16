@@ -57,6 +57,7 @@
 		/** service to be returned by this factory */
 		var service = {
 			allProjectsCount: allProjectsCount,
+			getDescription: getDescription,
 			getIDListFromAllProjects: getIDListFromAllProjects,
 			getMasterList: getMasterList,
 			getNextID: getNextID,
@@ -105,12 +106,23 @@
 		}
 
 		/**
+		 * 	@name	getDescription
+		 * 	@desc	Return masterList.description, the readable version
+		 * 			of the filter that goes with selectedProjects.
+		 */
+		function getDescription() {
+			if (typeof service.masterList.description == "undefined") {
+				return "none";
+			}
+			return service.masterList.description;
+		}
+		/**
 		 *  @name getIDListFromAllProjects
 		 *  @desc Return the list of projectIDs for all available projects
 		 *  @return {Number[]}
 		 */
-		function getIDListFromAllProjects() {
-			return _.map(service.masterList.allProjects, function(item) {
+		function getIDListFromAllProjects(masterList) {
+			return _.map(masterList.allProjects, function(item) {
 				return item.projectID;});
 		};
 
@@ -119,10 +131,10 @@
 		 *  @desc Getter for service.masterList
 		 *  @return {Object}
 		 */
-		function getMasterList() {
+		function getMasterList(projectID) {
 			/*  Did we already retrieve the brief descriptions? */
 			if (!service.hasMasterList()) {
-				service.masterList = service.updateAllProjects();
+				service.masterList = service.updateAllProjects(projectID);
 			}
 			return service.masterList;
 		};
@@ -178,6 +190,9 @@
 		 *  @return {string}
 		 */
 		function getSql() {
+			if (typeof service.masterList.sql == "undefined") {
+				return "";
+			}
 			return service.masterList.sql;
 		}
 
@@ -235,7 +250,7 @@
 
 		/**
 		 *  @name jumpToProject
-		 *  @desc Go to the project.detail state for the given projectID. There
+		 *  @desc Go to the app.project.detail state for the given projectID. There
 		 *        must be a project to match the given projectID. Otherwise an 
 		 *        is raised.
 		 *  @param {Number|string} projectID - project identifier
@@ -260,12 +275,12 @@
 
 		/**
 		 *  @name jumpToProjectInList
-		 *  @desc Go to the project.detail state for the specified project and make
+		 *  @desc Go to the app.project.detail state for the specified project and make
 		 *        it the current project
 		 */
 		function jumpToProjectInList(projectID) {
 			service.masterList = service.setProjectID(projectID);
-			$state.go('project.detail', {projectID: projectID});
+			$state.go('app.project.detail', {projectID: projectID});
 		};
 
 		/**
@@ -284,6 +299,7 @@
 					});
 					return service.masterList;
 				});
+			return service.masterList;
 		}
 
 		/**
@@ -429,13 +445,15 @@
 					else {
 						masterList.next = -1;
 					}
-					masterList.projectName = masterList.allProjects[index].name
 				}
 
 				masterList.selectedProjects = _.filter(masterList.allProjects, 
 						function(project) {
 					return _.contains(selectedIds, project.projectID);
 				});
+				if (index > -1) {
+					masterList.projectName = masterList.selectedProjects[index].name;
+				}
 
 			}
 			return masterList;

@@ -1,9 +1,8 @@
 (function() {
   
   angular
-    .module("app.curate", ["" +
+    .module("app.curate", [
 		"ui.router",
-		"ui.router.state.events",
-		]);
+	]);
   
 }());

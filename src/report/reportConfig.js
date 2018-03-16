@@ -15,32 +15,45 @@
   
   function reportConfig($stateProvider) {
     $stateProvider
-      .state("report", {
+      .state("app.report", {
         /** virtual root state */
-        url: "/report",
+        url: "report",
         controller: "Report",
         controllerAs: "report",
         templateUrl: "/app/src/report/report.html",
         data: {
           requiresLogin: false
-        }
+        },
+		resolve: {
+			masterList: ["projectListService",
+				function(projectListService) {
+					return projectListService.getMasterList();
+			}]
+		}
       })
       .state("report.columns", {
         /** state for the Select Other Columns view */
         url: "/columns/:query_string",
         templateUrl: "/app/src/report/templates/columns.html",
-        controller: function ($stateParams) {
-          console.log($stateParams);
-        }
+        controller: ["$transition$", function ($transition$) {
+          console.log($transition$);
+        }]
       })
-      .state("report.table", {
+      .state("app.report.table", {
         /** state for the View Project List as Table view */
         url: "/:query_string",
         templateUrl: "/app/src/report/templates/table.html",
-        controller: function ($stateParams) {
-          console.log($stateParams);
-        }
-      });
+        controller: ["$transition$", function ($transition$) {
+          console.log($transition$);
+        }],
+		resolve: {
+			reportResults:["$transition$", "reportTableService",
+				function($transition$, reportTableService){
+					return reportTableService.getReportResults(
+						$transition$.params().query_string);
+			}]
+		}
+     });
   }
   
 }());

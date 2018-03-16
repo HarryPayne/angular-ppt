@@ -17,8 +17,8 @@
 
 	function commentConfig($stateProvider) {
 		$stateProvider
-		.state("comment", {
-			url: "/comment",
+		.state("app.comment", {
+			url: "comment",
 			templateUrl: "/app/src/comment/comment.html",
 			controller: "Comment",
 			controllerAs: "comment",

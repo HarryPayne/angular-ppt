@@ -12,7 +12,6 @@
 			"ngAnimate",
 			"ui.bootstrap",
 			"ui.router.modal",
-			"ui.router.state.events",
 			"angular-storage",
 			"angular-jwt"
 			]);

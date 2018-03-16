@@ -10,8 +10,8 @@
   
   function curateConfig($stateProvider) {
     $stateProvider
-      .state("curate", {
-        url: "/curate",
+      .state("app.curate", {
+        url: "curate",
         templateUrl: "/app/src/curate/curate.html",
         controller: "Curate",
         controllerAs: "curate",
