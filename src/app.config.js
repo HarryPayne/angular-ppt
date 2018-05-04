@@ -10,11 +10,16 @@
 		.module("PPT")
 		.config(PPTConfig);
 
-	PPTConfig.$inject = ["$urlRouterProvider", "$stateProvider"];
-
-	function PPTConfig($urlRouterProvider, $stateProvider) {
+	PPTConfig.$inject = ["$urlRouterProvider", "$stateProvider",
+						 "$uiRouterProvider"];
+	
+	function PPTConfig($urlRouterProvider, $stateProvider, $uiRouterProvider) {
 		/* Make "/select/home" the default ui.router state. */
 		$urlRouterProvider.otherwise('/select/home');
+		
+		/* Register the StickyStatesPlugin */
+		var StickyStates = window['@uirouter/sticky-states'];
+		$uiRouterProvider.plugin(StickyStates.StickyStatesPlugin);
 
 		$stateProvider
 			.state("app", {
@@ -24,14 +29,24 @@
 						controller: "PPTCtrl",
 						controllerAs: "app",
 						template: "<ui-view></ui-view>"
+// 						template: ""
 					}
 				},
 				sticky: true,
-				resolve: {
-					"csrf_token": ["loginService", 
-						function(loginService) {
-						window.login_token = loginService.getLoginToken();
-					}]
+				dsr: {
+					default: {
+						state: "select.home"
+					}
+				}
+			})
+			.state("modal", {
+				url: "/modal",
+				views: {
+					popup: {
+						controller: "PPTCtrl",
+						controllerAs: "app",
+						template: "<ui-view></ui-view>",
+					}
 				}
 			})
 	};
